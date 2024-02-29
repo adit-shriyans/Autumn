@@ -1,0 +1,58 @@
+.TripModal {
+    position: absolute;
+    background-color: #fff;
+    z-index: 2000;
+    padding: 1rem;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.5);
+    left: 50%;
+    top: 50%;
+    border: 1px solid #888;
+
+    &__overlay {
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        backdrop-filter: blur(8px);
+        background-color: rgba(0, 0, 0, 0.15);
+        z-index: 2001;
+    }
+
+    &__input {
+        padding: 0.25rem;
+        outline: none;
+        margin: 0.5rem 0;
+        border-radius: 5px;
+        border: 2px solid #000;
+    }
+
+    &__btns {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Crimson Pro', sans-serif;
+        font-weight: 600;
+        text-shadow: #000;
+    }
+
+    &__save {
+        text-decoration: none;
+        color: rgba(22, 216, 54, 0.753);
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        & div {
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    &__cancel {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        color: rgba(252, 80, 80, 0.759);
+    }
+}

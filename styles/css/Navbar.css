@@ -1,0 +1,37 @@
+.Nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 3vw;
+  background-color: #fff;
+  border-right: 1px solid black;
+}
+.Nav__content {
+  height: fit-content;
+  position: sticky;
+  top: 1px;
+}
+.Nav a {
+  text-align: center;
+  font-size: 1.25rem;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+.Nav__signOut, .Nav__signIn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Nav__signOut-btn, .Nav__signIn-btn {
+  cursor: pointer;
+  background-color: transparent;
+  border: 2px solid rgb(255, 157, 0);
+  border-radius: 5px;
+  margin: 0 0.4rem;
+}
+.Nav__profilePic {
+  border-radius: 50%;
+  border: 3px solid rgb(255, 157, 0);
+}

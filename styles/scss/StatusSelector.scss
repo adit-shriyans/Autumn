@@ -1,0 +1,54 @@
+.Page__statusToggle {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: 2rem;
+    display: flex;
+
+    &>* {
+        font-family: sans-serif;
+    }
+
+    .TripTypeBtns {
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        padding: 0.75em 1em;
+        background: transparent;
+        color: #AD8B73;
+
+        &-items {
+            display: flex;
+            flex-direction: row;
+            position: relative;
+
+            &>* {
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            }
+        }
+
+        &-item {
+            font-size: 0.85rem;
+            padding: 0 2rem;
+            padding-bottom: 0.75rem;
+            margin-right: 0.25em;
+            transition: color 0.06s linear;
+            user-select: none;
+
+            &:hover {
+                cursor: pointer;
+                color: #5f2929;
+            }
+        }
+
+        &-underline {
+            height: 3px;
+            width: 40px;
+            border-radius: 2px;
+            background: #5f2929;
+            position: absolute;
+            bottom: 0;
+            transition: transform 0.5s, width 0.1s ease-in;
+        }
+    }
+
+}
