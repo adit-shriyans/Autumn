@@ -5,7 +5,6 @@ import SidePanel from "@components/SidePanel";
 import dynamic from "next/dynamic";
 import { SetStateAction, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import TripModal from '@components/TripModal';
 import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
