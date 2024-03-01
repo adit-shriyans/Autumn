@@ -18,8 +18,8 @@ export const GET = async (request: NextApiRequest, { params }: { params: { id: s
         await connectToDB();
 
         const stops = await Stop.find({
-            trip: params.id
-        }).populate('trip');
+            userId: params.id
+        }).populate('user');
 
         return new Response(JSON.stringify(stops), {
             status: 200
