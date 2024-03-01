@@ -19,15 +19,17 @@ interface PIPropsType {
   distances: Number[];
   stop: MarkerLocation;
   stops: MarkerLocation[];
+  routes: MarkerLocation[];
   dndEnable: boolean;
   setStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
+  setRoutes: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
   setTotalDistance: React.Dispatch<React.SetStateAction<number>>;
   setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
 }
 
 const arraySize = 6;
 
-const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation }: PIPropsType) => {
+const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation, routes, setRoutes }: PIPropsType) => {
   const locationNameArr = stop.locationName.split(',');
   let name = locationNameArr[0];
   if (locationNameArr.length > 1) {
@@ -37,8 +39,8 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [inputValues, setInputValues] = useState({
     locationName: stop.locationName,
     inDate: stop.startDate || getTodaysDate(),
-    outDate: stop.endDate || getTodaysDate(),
-    notesMsg: stop.notes || '',
+    // outDate: stop.endDate || getTodaysDate(),
+    notesMsg: stop.desc || '',
   });
 
   const [distValues, setDistValues] = useState({
@@ -51,6 +53,8 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [errMsg, setErrMsg] = useState('');
   const [showNotes, setShowNotes] = useState(false);
   const [showDropDown, setShowDropDown] = useState(false);
+  const [addRoute, setAddRoute] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const LNInputRef = useRef<HTMLInputElement | null>(null);
   const LDInputRef = useRef<HTMLInputElement | null>(null);
@@ -73,11 +77,11 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   }
 
   const handleClick = (id: number) => {
-    if (!editMode[id]) {
-      let newEditMode = Array(arraySize).fill(false);
-      newEditMode[id] = !editMode[id];
-      setEditMode(newEditMode);
-    }
+    // if (!editMode[id]) {
+    //   let newEditMode = Array(arraySize).fill(false);
+    //   newEditMode[id] = !editMode[id];
+    //   setEditMode(newEditMode);
+    // }
   };
 
   const handleAddNotes = () => {
@@ -107,15 +111,15 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
 
   const handleInputBlur = () => {
-    const { locationName, inDate, outDate, notesMsg } = inputValues
+    const { locationName, inDate, notesMsg } = inputValues
 
-    if (locationName && inDate && outDate) {
-      if (isValidDate(inDate) && isValidDate(outDate)) {
+    if (locationName && inDate ) {
+      if (isValidDate(inDate)) {
         if (notesMsg === '')
           setShowNotes(false);
         setEditMode(Array(arraySize).fill(false));
       }
-      else if (!isValidDate(inDate) || !isValidDate(outDate)) {
+      else if (!isValidDate(inDate)) {
         setErrMsg("Date not in format DD/MM/YY");
         focusOnEmptyField();
       }
@@ -127,15 +131,15 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const { locationName, inDate, outDate, notesMsg } = inputValues
+    const { locationName, inDate, notesMsg } = inputValues
     if (e.key === 'Enter') {
-      if (locationName && inDate && outDate) {
-        if (isValidDate(inDate) && isValidDate(outDate)) {
+      if (locationName && inDate) {
+        if (isValidDate(inDate)) {
           if (notesMsg === '')
             setShowNotes(false);
           setEditMode(Array(arraySize).fill(false));
         }
-        else if (!isValidDate(inDate) || !isValidDate(outDate)) {
+        else if (!isValidDate(inDate)) {
           e.preventDefault();
           setErrMsg("Date not in format DD/MM/YY");
           focusOnEmptyField();
@@ -261,7 +265,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
     if(!editMode[3] && !editMode[4] && !editMode[5]) {
       const newStops = stops.map((place) => {
         if (stop.id === place.id) {
-          return { ...place, startDate: inputValues.inDate, endDate: inputValues.outDate, notes: inputValues.notesMsg }
+          return { ...place, startDate: inputValues.inDate, notes: inputValues.notesMsg }
         }
         return place;
       })
@@ -270,11 +274,22 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
     else if(editMode[3]) IDInputRef.current?.focus();
     else if(editMode[4]) ODInputRef.current?.focus();
     else if(editMode[5]) NotesInputRef.current?.focus();
-  }, [inputValues.inDate, inputValues.outDate, inputValues.notesMsg, editMode[3], editMode[4], editMode[5]]);
+  }, [inputValues.inDate, inputValues.notesMsg, editMode[3], editMode[4], editMode[5]]);
+
+  const handleAddRoute = () => {
+    if(!added) {
+      setRoutes((prev) => [...prev, stop]);
+      setAdded(true);
+    }
+    else {
+      setRoutes(prev => prev.filter(route => route.id !== stop.id));
+    }
+  }
+  
   return (
     <div
       className='PlaceInfo'
-      onClick={() => { setZoomLocation(stop.location) }}
+      onClick={() => { setZoomLocation(stop.location); setAddRoute(prev => !prev) }}
     >
       <div
           className='PlaceInfo__dropdownbtn-container'
@@ -361,14 +376,14 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
               )}
             </div>
           </div>
-          <div className='PlaceInfo__info'>
+          {/* <div className='PlaceInfo__info'>
             <div className='PlaceInfo__img-container'>
               <EventIcon className='PlaceInfo__img' />
             </div>
             <div className={`ErrorPopUp ${showErr[4] && errMsg ? '' : 'hidden'}`}>
               {errMsg}
-            </div>
-            <div
+            </div> */}
+            {/* <div
               className='PlaceInfo__outdate PlaceInfo__date PlaceInfo__content'
               onClick={() => handleClick(4)}
             >
@@ -389,10 +404,10 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
               ) : (
                 `${inputValues.outDate}`
               )}
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
         </div>
-        <div className='PlaceInfo__DistInfo'>
+        {/* <div className='PlaceInfo__DistInfo'>
           <div className='PlaceInfo__info'>
             <div className='PlaceInfo__img-container'>
               <FontAwesomeIcon className='PlaceInfo__img' icon={faRoute} />
@@ -413,7 +428,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
               {distValues.homeDist}km
             </div>
           </div>
-        </div>
+        </div> */}
         <div className={`PlaceInfo__info ${showNotes || inputValues.notesMsg !== '' ? '' : 'hidden'}`}>
           <div className='PlaceInfo__img-container'>
             <EditNoteIcon />
@@ -441,11 +456,16 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
             )}
           </div>
         </div>
+        {addRoute&&(
+          <button onClick={handleAddRoute} className='addRouteBtn'>
+            Add Route
+          </button>
+        )}
     </div>
   )
 }
 
-const PlaceInfo = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation }: PIPropsType) => {
+const PlaceInfo = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation, routes, setRoutes }: PIPropsType) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: stop.id });
   const DndStyles = {
     transition,
@@ -453,21 +473,10 @@ const PlaceInfo = ({ distances, stop, stops, dndEnable, setStops, setTotalDistan
   }
 
   return (
-    dndEnable ? ( 
-      <div
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        style={DndStyles}
-      >
-        <PlaceInfoContent distances={distances} stop={stop} stops={stops} dndEnable={dndEnable} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} />
-      </div>
-    ) : (
       <div>
-        <PlaceInfoContent distances={distances} stop={stop} stops={stops} dndEnable={dndEnable} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} />
+        <PlaceInfoContent distances={distances} stop={stop} stops={stops} dndEnable={dndEnable} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} routes={routes} setRoutes={setRoutes} />
       </div>
     )
-  );  
 };
 
 export default PlaceInfo;

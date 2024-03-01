@@ -1,17 +1,17 @@
 import { connectToDB } from '@utils/database';
 import { NextApiRequest, NextApiResponse } from 'next';
-import Stop from '@models/stop';
+import Trip from '@models/trip';
 
 export const GET = async (request: NextApiRequest) => {
     try{
         await connectToDB();
 
-        const stops = await Stop.find({}).populate('trip');
+        const trips = await Trip.find({}).populate('user');
 
-        return new Response(JSON.stringify(stops), {
+        return new Response(JSON.stringify(trips), {
             status: 200
         })
     } catch(error) {
-        return new Response("Failed to fetch all stops", {status: 500})
+        return new Response("Failed to fetch all trips", {status: 500})
     }
 }

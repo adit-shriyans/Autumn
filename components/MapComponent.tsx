@@ -19,6 +19,7 @@ import Routes from './Routes';
 
 interface MCPropsType {
     stops: MarkerLocation[];
+    routes: MarkerLocation[];
     setStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
     setDistances: React.Dispatch<React.SetStateAction<Number[]>>;
     zoomLocation: L.LatLngTuple;
@@ -56,38 +57,38 @@ function LocationMarker({ stops, setStops, tripId, setZoomLocation }: LMPropsTyp
     const map = useMapEvents({
         async click(e) {
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
-                const data = await response.json();
+                // const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+                // const data = await response.json();
 
-                const parsedData = geocodingResponseSchema.parse(data);
+                // const parsedData = geocodingResponseSchema.parse(data);
 
-                const locationName = parsedData.display_name || 'Unknown Location';
+                // const locationName = parsedData.display_name || 'Unknown Location';
 
-                const createStopResponse = await fetch("/api/stop/new", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        stopId: stops.length,
-                        tripId: tripId,
-                        location: [e.latlng.lat, e.latlng.lng],
-                        locationName,
-                        startDate: '',
-                        endDate: '',
-                        notes: ''
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                // const createStopResponse = await fetch("/api/stop/new", {
+                //     method: "POST",
+                //     body: JSON.stringify({
+                //         stopId: stops.length,
+                //         tripId: tripId,
+                //         location: [e.latlng.lat, e.latlng.lng],
+                //         locationName,
+                //         startDate: '',
+                //         endDate: '',
+                //         notes: ''
+                //     }),
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                // });
 
-                if (!createStopResponse.ok) {
-                    console.error('Failed to create trip:', createStopResponse.statusText);
-                    return;
-                }
+                // if (!createStopResponse.ok) {
+                //     console.error('Failed to create trip:', createStopResponse.statusText);
+                //     return;
+                // }
 
-                const createdStop = await createStopResponse.json();
+                // const createdStop = await createStopResponse.json();
 
-                setStops([...stops, { id: createdStop._id, location: createdStop.location, locationName }])
-                setZoomLocation(createdStop.location);
+                // setStops([...stops, { id: createdStop._id, location: createdStop.location, locationName }])
+                // setZoomLocation(coord);
             } catch (error) {
                 if (error instanceof ZodError) {
                     console.error('Validation error:', error.errors);
@@ -101,7 +102,7 @@ function LocationMarker({ stops, setStops, tripId, setZoomLocation }: LMPropsTyp
     return null
 }
 
-export default function MapComponent({ stops, setStops, setDistances, zoomLocation, setZoomLocation, coord }: MCPropsType) {
+export default function MapComponent({ stops, routes, setStops, setDistances, zoomLocation, setZoomLocation, coord }: MCPropsType) {
     const [showRoutes, setShowRoutes] = useState(false);
 
     const params = useParams();
@@ -156,7 +157,7 @@ export default function MapComponent({ stops, setStops, setDistances, zoomLocati
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Routes stops={stops} setDistances={setDistances} coord={coord} />
+                <Routes stops={routes} setDistances={setDistances} coord={coord} />
                 <Marker
                     icon={
                         new L.Icon({

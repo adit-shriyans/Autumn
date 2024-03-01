@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, ChangeEvent, useRef, useMemo } from 'react';
-import '@styles/css/SidePanel.css'
+import '../styles/css/SidePanel.css';
+// import '@styles/css/Si'
+// import '../styles/css/'
 import PlaceInfo from './PlaceInfo';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -22,7 +24,9 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 interface SPPropsType {
   distances: Number[];
   stops: MarkerLocation[];
+  routes: MarkerLocation[];
   setStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
+  setRoutes: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
   setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
   coord: L.LatLngTuple;
 }
@@ -46,7 +50,7 @@ const geocodingResponseSchema = z.array(
   })
 );
 
-const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPropsType) => {
+const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes, setRoutes }: SPPropsType) => {
   const [scrolled, setScrolled] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult<RawResult>[]>([]);
   const [addingLocation, setAddingLocation] = useState(false);
@@ -65,11 +69,11 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPro
   useEffect(() => {
     let dist = 0;
     let sDate = stops[0]?.startDate || getTodaysDate();
-    let eDate = stops[stops.length - 1]?.endDate || getTodaysDate();
-    if (sDate && eDate && isValidDate(sDate) && isValidDate(eDate)) setTripDates([sDate, eDate]);
+    // let eDate = stops[stops.length - 1]?.endDate || getTodaysDate();
+    // if (sDate && eDate && isValidDate(sDate) && isValidDate(eDate)) setTripDates([sDate, eDate]);
     for (let i = 0; i < stops.length; i++) {
       if (stops[i].startDate !== undefined && compareDates(stops[i].startDate!, tripDates[0]) === -1) setTripDates([stops[i].startDate!, tripDates[1]])
-      if (stops[i].endDate !== undefined && compareDates(stops[i].endDate!, tripDates[1]) === 1) setTripDates([tripDates[0], stops[i].endDate!])
+      // if (stops[i].endDate !== undefined && compareDates(stops[i].endDate!, tripDates[1]) === 1) setTripDates([tripDates[0], stops[i].endDate!])
       if (i === 0) dist += parseFloat(calculateDistance(stops[i].location, coord).toFixed(2))
       else dist += parseFloat(calculateDistance(stops[i].location, stops[i - 1].location).toFixed(2))
     }
@@ -213,9 +217,13 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPro
     }
   }
 
+  const handleAddRouteClick = () => {
+
+  }
+
   return (
     <div className={`SidePanel ${scrolled ? 'SideWindow' : ''}`}>
-      <h1 className='SidePanel__heading'>Travel List!</h1>
+      <h1 className='SidePanel__heading'>Waste Dump Locations</h1>
       <div className='TripInfo'>
         <div className='TripInfo__dist'>
           <div className='TripInfo__dist-img'>
@@ -288,15 +296,15 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPro
           Your Location
         </div>
       </div>
-      <div className='DragNDrop'>
+      {/* <div className='DragNDrop'>
         <input 
           className='DragNDrop__box' 
           onChange={() => setDndEnable(prev => !prev)} 
           type="checkbox" 
           checked={dndEnable}
-        />
-        <div className='DragNDrop__text'>Reorder</div>
-      </div>
+        /> */}
+        {/* <div className='DragNDrop__text'>Reorder</div> */}
+      {/* </div> */}
       {stops.length > 0 ? (
         <div className='StopInfo__container'>
           <SortableContext 
@@ -305,7 +313,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPro
           >
             {stops.map((stop) => (
               <div key={stop.id} className='StopInfo'>
-                <PlaceInfo key={stop.id} distances={distances} stop={stop} stops={stops} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} dndEnable={dndEnable} />
+                <PlaceInfo key={stop.id} distances={distances} stop={stop} stops={stops} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} dndEnable={dndEnable} routes={routes} setRoutes={setRoutes} />
               </div>
             ))}
           </SortableContext>
@@ -314,7 +322,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord }: SPPro
         (
           <div className='SidePanel__filler'>
             <p>or</p>
-            <h2>Click on the map!</h2>
+            <h2>Click on the map</h2>
           </div>
         )}
     </div>

@@ -8,9 +8,7 @@ interface StopRequestType extends MarkerLocation {
 }
 
 export const POST = async (req: { json: () => PromiseLike<StopRequestType> | StopRequestType; }) => {
-    const {userId, location, locationName, startDate, desc } = await req.json();
-    console.log(userId);
-    
+    const { userId, location, locationName, startDate, desc } = await req.json();
 
     try {
         await connectToDB();

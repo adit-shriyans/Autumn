@@ -1,9 +1,3 @@
-// import NextAuth from "next-auth";
-// import { options } from "./options";
-
-// const handler = NextAuth(options);
-// export { handler as GET, handler as POST };
-
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -22,6 +16,8 @@ const handler = NextAuth({
       // store the user id from MongoDB to session
       const sessionUser = await User.findOne({ email: session.user.email });
       session.user.id = sessionUser._id.toString();
+      if(session.user.email === 'shriyansadit@gmail.com') session.user.role = 'admin';
+      else session.user.role = 'resident'
 
       return session;
     },
