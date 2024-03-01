@@ -24,7 +24,7 @@ interface MCPropsType {
     zoomLocation: L.LatLngTuple;
     setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
     coord: L.LatLngTuple;
-    setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+    // setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface LMPropsType {
@@ -101,7 +101,7 @@ function LocationMarker({ stops, setStops, tripId, setZoomLocation }: LMPropsTyp
     return null
 }
 
-export default function MapComponent({ stops, setStops, setDistances, zoomLocation, setZoomLocation, coord, setShowModal }: MCPropsType) {
+export default function MapComponent({ stops, setStops, setDistances, zoomLocation, setZoomLocation, coord }: MCPropsType) {
     const [showRoutes, setShowRoutes] = useState(false);
 
     const params = useParams();
@@ -137,17 +137,17 @@ export default function MapComponent({ stops, setStops, setDistances, zoomLocati
         setShowRoutes((prev) => !prev);
     }
 
-    function handleSaveClick(e: MouseEvent<HTMLDivElement>): void {
-        e.stopPropagation();
-        setShowModal((prev) => !prev);
-    }
+    // function handleSaveClick(e: MouseEvent<HTMLDivElement>): void {
+    //     e.stopPropagation();
+    //     setShowModal((prev) => !prev);
+    // }
 
     return (
         <div className="MapComponent">
             <div className='MapContainer__userBtns'>
-                <div className='MapContainer__save' onClick={handleSaveClick}>
+                {/* <div className='MapContainer__save' onClick={handleSaveClick}>
                     Save
-                </div>
+                </div> */}
                 <DirectionsCarIcon className='MapContainer__carIcon' onClick={handleToggleRoutes} />
             </div>
 

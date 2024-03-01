@@ -1,137 +1,150 @@
-"use client";
-import '@styles/css/index.css'
-import { StatusType, TripType, VoidFunctionType } from '@assets/types/types';
+'use client'
+
+import { MarkerLocation, StopResponseType, TripType } from '@assets/types/types';
+import SidePanel from "@components/SidePanel";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import SendIcon from '@mui/icons-material/Send';
 import { useSession } from 'next-auth/react';
-import type { DefaultSession } from 'next-auth';
-import demoImg from '../assets/sitedemo.png';
-import Image from 'next/image';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import TripCard from '@components/TripCard';
-import StatusSelector from '@components/StatusSelector';
+import { v4 } from 'uuid'
+import { z, ZodError } from 'zod';
+import { useParams } from 'next/navigation';
+import TripModal from '@components/TripModal';
+import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 
-declare module 'next-auth' {
-  interface Session {
-    user: DefaultSession['user'] & {
-      id: string;
-    };
-  }
-}
+const geocodingResponseSchema = z.object({
+  place_id: z.number(),
+  licence: z.string(),
+  osm_type: z.string(),
+  osm_id: z.number(),
+  lat: z.string(),
+  lon: z.string(),
+  class: z.string(),
+  type: z.string(),
+  place_rank: z.number(),
+  importance: z.number(),
+  addresstype: z.string(),
+  name: z.string(),
+  display_name: z.string(),
+  address: z.record(z.unknown()),
+  boundingbox: z.array(z.string()),
+});
 
-const MyPage = () => {
-  const [trips, setTrips] = useState<TripType[]>([]);
-  const [tripStatus, setTripStatus] = useState<String>('')
+const Home = () => {
+  const [stops, setStops] = useState<MarkerLocation[]>([]);
+  const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const { data: session } = useSession();
-  const [showedTrips, setShowedTrips] = useState<TripType[]>(trips);
-
-  const router = useRouter();
-
-  const filterTrips = (status: String) => {
-    setTripStatus(status);
-    if (status !== '') setShowedTrips(trips.filter((trip) => (trip.status === status as StatusType | '')));
-    else setShowedTrips(trips);
-  }
-
-  const fetchTrips = async () => {
-    const response = await fetch('/api/trip');
-    const data = await response.json();
-    const allTrips: TripType[] = data.map((trip: any) => {
-      return { _id: trip._id, name: trip.name || 'Your Trip', stops: [], status: trip.status }
-    });
-    
-    setTrips(allTrips);
-  }
+  const [desc, setDesc] = useState<string>('');
+  const [addDesc, setAddDesc] = useState(false);
+  const [startDate, setStartDate] = useState<string>('');
 
   useEffect(() => {
-    fetchTrips();
+    // Fetch current date and format it as dd-mm-yyyy
+    const currentDate = new Date();
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = currentDate.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
+    setStartDate(formattedDate);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (location) {
+        const { latitude, longitude } = location.coords;
+        setCoord([latitude, longitude]);
+      }, function () {
+        console.log('Could not get position');
+      });
+    }
   }, []);
 
-  useEffect(() => {
-    filterTrips(tripStatus);
-  }, [trips]);
+  const handleSendClick = async () => {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0]}&lon=${coord[1]}`);
+    const data = await response.json();
 
-  const handleCreateClick = async () => {
-    try {
-      const createTripResponse = await fetch("/api/trip/new", {
-        method: "POST",
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          name: 'Trip Nameee',
-          status: "upcoming",
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    const parsedData = geocodingResponseSchema.parse(data);
 
-      if (!createTripResponse.ok) {
-        console.error('Failed to create trip:', createTripResponse.statusText);
-        return;
-      }
+    const locationName = parsedData.display_name || 'Unknown Location';
 
-      const createdTrip = await createTripResponse.json();
+    const createStopResponse = await fetch("/api/stop/new", {
+      method: "POST",
+      body: JSON.stringify({
+        userId: session?.user?.id,
+        location: coord,
+        locationName,
+        startDate: startDate,
+        desc: desc,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-      router.push(`/trip/${createdTrip._id}`);
-    } catch (error) {
-      console.error('Error creating trip:', error);
+    if (!createStopResponse.ok) {
+      console.error('Failed to create trip:', createStopResponse.statusText);
+      return;
     }
-  };
 
-  const handleToggleClick = (slug: String) => {
-    if (slug === "one") filterTrips('');
-    else if (slug === "two") filterTrips('upcoming');
-    else if (slug === "three") filterTrips('ongoing');
-    else if (slug === "four") filterTrips('completed');
-    // filterTrips();
+    const createdStop = await createStopResponse.json();
+    console.log(stops, createdStop);
+    
+
+    setStops([...stops, { id: createdStop._id, location: createdStop.location, locationName, startDate, desc }])
   }
 
+  const handleMarkClick = () => {
+    setAddDesc(true);
+    console.log(addDesc);
+    
+  }
+
+  useEffect(() => {
+    console.log(stops);  
+  }, [stops]);
+
   return (
-    <div className="Page">
-      <div className='Page__demoImg'>
-        <Image
-          src={demoImg}
-          alt='Demo'
-        />
-      </div>
-      <button className='Page__plan' onClick={handleCreateClick}>
-        <TelegramIcon />
-        Plan a Trip!
-      </button>
-      <div className='Page__userTrips'>
-        <div className='Page__heading'>
-          <fieldset>
-            <legend>
-              Your Trips
-            </legend>
-          </fieldset>
-        </div>
-        <div className='Page__statusToggle'>
-          <StatusSelector
-            onSelectedItem={(item: { slug: "one" | "two" | "three" | "four"; }) => {
-              handleToggleClick(item.slug);
-            }}
-          />
-        </div>
-        <div className='Page__trips'>
-          {showedTrips.length !== 0 ? (
-            showedTrips.map((trip) => (
-              <TripCard key={trip._id} trip={trip} trips={trips} setTrips={setTrips} />
-            ))) :
-            (
-              <div className='Page__NA'>
-                {trips.length ? (
-                  `No ${tripStatus} trips`
-                ) : (
-                  'No trips planned'
-                )}
-              </div>
-            )
-          }
-        </div>
+    <div className="Home">
+      <div>
+        <button onClick={handleMarkClick}>
+          Mark garbage
+        </button>
+        {addDesc && (
+          <div>
+            <div>
+              Your Location
+            </div>
+            <Box
+              component="form"
+              sx={{
+                '& .MuiTextField-root': { m: 1, width: '25ch' },
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                id="outlined-textarea"
+                label="Description"
+                value={desc}
+                placeholder="Add description"
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setDesc(event.target.value);
+                }}
+                multiline
+              />
+            </Box>
+            <div>
+              <button onClick={handleSendClick}>
+                <SendIcon /> Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default MyPage;
+export default Home;

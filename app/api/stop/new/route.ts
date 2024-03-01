@@ -1,21 +1,21 @@
 import { connectToDB } from '@utils/database';
 import Stop from '@models/stop';
 import { MarkerLocation, StatusType } from '@assets/types/types';
+import {v4} from 'uuid';
 
 interface StopRequestType extends MarkerLocation {
-    tripId: String;
-    stopId: Number;
+    userId: string,
 }
 
 export const POST = async (req: { json: () => PromiseLike<StopRequestType> | StopRequestType; }) => {
-    const { tripId, stopId, location, locationName, startDate, endDate, notes } = await req.json();
+    const {userId, location, locationName, startDate, desc } = await req.json();
+    console.log(userId);
+    
 
     try {
         await connectToDB();
         const newStop = new Stop({
-            trip: tripId, 
-            id: stopId,
-            location, locationName, startDate, endDate, notes
+            id: v4(), userId, location, locationName, startDate, desc
         })
 
         await newStop.save();

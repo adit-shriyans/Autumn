@@ -10,8 +10,7 @@ export type MarkerLocation = {
     location: L.LatLngTuple,
     locationName: string,
     startDate?: string,
-    endDate?: string,
-    notes?: string
+    desc?: string
 }
 
 export type searchResultType = {

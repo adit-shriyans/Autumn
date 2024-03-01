@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { signIn, signOut, useSession, getProviders, LiteralUnion, ClientSafeProvider } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers/index';
-import '../styles/css/Navbar.css';
+// import '../styles/css/Navbar.css';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -54,12 +54,17 @@ const Navbar = () => {
                         </div>
                     ) : (
                         <>
-                            <Link href='/signup'>
-                                <button className='Nav__signIn-btn'>Sign Up</button>
-                            </Link>
-                            <Link href='/login'>
-                                <button className='Nav__signIn-btn'>Login</button>
-                            </Link>
+                            {providers &&
+                                Object.values(providers).map((provider) => (
+                                    <button
+                                        type='button'
+                                        key={provider.name}
+                                        onClick={() => signIn(provider.id)}
+                                        className='Nav__signIn-btn'
+                                    >
+                                        Sign In
+                                    </button>
+                                ))}
                         </>
                     )}
                 </div>

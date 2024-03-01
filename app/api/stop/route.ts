@@ -6,7 +6,7 @@ export const GET = async (request: NextApiRequest) => {
     try{
         await connectToDB();
 
-        const stops = await Stop.find({}).populate('trip');
+        const stops = await Stop.find({}).populate('user');
 
         return new Response(JSON.stringify(stops), {
             status: 200
