@@ -34,7 +34,7 @@ export default function DraggableMarker({ stops, setStops, center, id, setZoomLo
   );
 
   const getLocationName = async (location: L.LatLngTuple) => {    
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${location[0]}&lon=${location[1]}`);
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${location[0] || 55}&lon=${location[1] || 55}`);
     const data = await response.json();
   
     const newName = data.display_name || 'Unknown Location';

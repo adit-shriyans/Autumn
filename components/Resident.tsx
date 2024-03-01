@@ -62,7 +62,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
   }, []);
 
   const handleSendClick = async () => {
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0]}&lon=${coord[1]}`);
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
     const data = await response.json();
 
     const parsedData = geocodingResponseSchema.parse(data);
