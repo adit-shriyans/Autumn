@@ -2,7 +2,7 @@ import { connectToDB } from '@utils/database';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stop from '@models/stop';
 
-export const GET = async (request: NextApiRequest) => {
+export const GET = async (request) => {
     try{
         await connectToDB();
 
