@@ -13,22 +13,22 @@ interface StopRequestType {
 }
 
 // GET
-export const GET = async (request: Request | NextApiRequest, { params }: { params: { id: string } }) => {
-    try {
-        await connectToDB();
+// export const GET = async (request: Request | NextApiRequest, { params }: { params: { id: string } }) => {
+//     try {
+//         await connectToDB();
 
-        const stops = await Stop.find({
-            userId: params.id
-        }).populate('user');
+//         const stops = await Stop.find({
+//             userId: params.id
+//         }).populate('user');
 
-        return new Response(JSON.stringify(stops), {
-            status: 200
-        });
-    } catch(error) {
-        console.error(error);
-        return new Response("Failed to fetch all prompts", { status: 500 });
-    }
-}
+//         return new Response(JSON.stringify(stops), {
+//             status: 200
+//         });
+//     } catch(error) {
+//         console.error(error);
+//         return new Response("Failed to fetch all prompts", { status: 500 });
+//     }
+// }
 
 // PATCH
 export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> | StopRequestType; }, { params }: { params: { id: string } }) => {
