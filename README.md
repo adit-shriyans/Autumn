@@ -34,7 +34,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 Video:
 
-This is what the Government official will see
+This is what the Government official will see, by logging in from an official email id
 
 https://github.com/adit-shriyans/Pallotti/assets/137682667/8f17f5d2-aba1-4717-8a94-2cee73b82eec
+
+This is what a resident would see
+
+https://github.com/adit-shriyans/Pallotti/assets/137682667/05052c34-d656-43e9-ac4c-d0520bbf6ea2
 
