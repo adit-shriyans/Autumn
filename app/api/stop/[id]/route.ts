@@ -59,14 +59,14 @@ export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> 
 };
 
 // DELETE
-export const DELETE = async (request: NextApiRequest, { params }: { params: { id: string } }) => {
-    try {
-        await connectToDB();
-        await Stop.findByIdAndDelete(params.id);
+// export const DELETE = async (request: NextApiRequest, { params }: { params: { id: string } }) => {
+//     try {
+//         await connectToDB();
+//         await Stop.findByIdAndDelete(params.id);
 
-        return new Response("Stop deleted successfully", { status: 200 });
-    } catch (error) {
-        console.error(error)
-        return new Response("Failed to delete stop", { status: 500 });
-    }
-}
+//         return new Response("Stop deleted successfully", { status: 200 });
+//     } catch (error) {
+//         console.error(error)
+//         return new Response("Failed to delete stop", { status: 500 });
+//     }
+// }
