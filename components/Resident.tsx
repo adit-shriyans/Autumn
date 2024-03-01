@@ -4,11 +4,12 @@
 import { SetStateAction, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import type { DefaultSession } from 'next-auth';
-import { Box, TextField } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { MarkerLocation } from '@assets/types/types';
 import { z, ZodError } from 'zod';
 import {v4} from 'uuid';
+import '../styles/css/Resident.css';
 
 declare module 'next-auth' {
   interface Session {
@@ -50,6 +51,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
   const [desc, setDesc] = useState<string>('');
   const [addDesc, setAddDesc] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
+  const [locationName, setLocationName] = useState('');
 
   useEffect(() => {
     // Fetch current date and format it as dd-mm-yyyy
@@ -61,6 +63,19 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
     setStartDate(formattedDate);
   }, []);
 
+  useEffect(() => {
+    const fetchName = async () => {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
+      const data = await response.json();
+
+      const parsedData = geocodingResponseSchema.parse(data);
+
+      const locationName = parsedData.display_name || 'Unknown Location';
+      setLocationName(locationName);
+    }
+    fetchName();
+  }, [coord]);
+
   const handleSendClick = async () => {
     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
     const data = await response.json();
@@ -68,18 +83,21 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
     const parsedData = geocodingResponseSchema.parse(data);
 
     const locationName = parsedData.display_name || 'Unknown Location';
+    setLocationName(locationName);
 
-    setStops([...stops, { id: v4(), location: coord, locationName, desc }])
+    setStops([...stops, { id: v4(), location: coord, locationName, desc }]);
+    setAddDesc(false);
   }
 
   return (
     <div className="Resident">
-      <div>
-        <div>
+      <div className='Resident__container'>
+        <div className='Resident__location'>
           Your Location
+          <div className='Resident__location-name'>{locationName}</div>
         </div>
-        <div>
-          <button onClick={() => (setAddDesc(prev => !prev))}>Mark Garbage</button>
+        <div className='Resident__garbageInfo'>
+          <Button variant='outlined' className='Resident__garbageInfo-mark' onClick={() => (setAddDesc(prev => !prev))}>Mark Garbage</Button>
           {addDesc && (
             <>
             <Box
@@ -90,7 +108,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
               noValidate
               autoComplete="off"
             >
-              <div>
+              <div className='Resident__garbageInfo-desc'>
                 <TextField
                   id="outlined-textarea"
                   label="Description"
@@ -103,9 +121,9 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
                 />
               </div>
             </Box>
-            <button onClick={handleSendClick}>
+            <Button variant='outlined' className='Resident__garbageInfo-send' onClick={handleSendClick}>
               <SendIcon /> Send
-            </button>
+            </Button>
             </>
           )}
         </div>

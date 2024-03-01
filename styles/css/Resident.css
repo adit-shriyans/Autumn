@@ -1,0 +1,20 @@
+.Resident {
+  height: 100vh;
+}
+.Resident__container {
+  padding: 2vw;
+}
+.Resident__location {
+  font-size: 1.5rem;
+}
+.Resident__location-name {
+  margin: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  background-color: #dadadc;
+  width: fit-content;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+.Resident__garbageInfo {
+  margin-top: 5vh;
+}
