@@ -3,16 +3,13 @@ import Stop from '@models/stop';
 import { MarkerLocation } from '@assets/types/types';
 import { v4 } from 'uuid';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest } from 'next/server';
 
-interface StopRequestType extends MarkerLocation {
-    userId: string;
-}
-
-export const POST = async (req: NextApiRequest, res: NextApiResponse) => {
+export const POST = async (req, res) => {
     try {
         await connectToDB();
 
-        const { userId, location, locationName, startDate, desc }: StopRequestType = req.body;
+        const { userId, location, locationName, startDate, desc } = req.body;
 
         const newStop = new Stop({
             id: v4(),
