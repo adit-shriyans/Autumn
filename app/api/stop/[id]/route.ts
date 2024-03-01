@@ -13,8 +13,8 @@ interface StopRequestType {
 }
 
 // GET
-export const GET = async (request: NextApiRequest, { params }: { params: { id: string } }) => {
-    try{
+export const GET = async (request: Request | NextApiRequest, { params }: { params: { id: string } }) => {
+    try {
         await connectToDB();
 
         const stops = await Stop.find({
@@ -23,10 +23,10 @@ export const GET = async (request: NextApiRequest, { params }: { params: { id: s
 
         return new Response(JSON.stringify(stops), {
             status: 200
-        })
+        });
     } catch(error) {
-        console.error(error)
-        return new Response("Failed to fetch all prompts", {status: 500})
+        console.error(error);
+        return new Response("Failed to fetch all prompts", { status: 500 });
     }
 }
 
