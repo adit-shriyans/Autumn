@@ -134,7 +134,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
 
       const createdStop = await createStopResponse.json();
 
-    setStops([...stops, { id: createdStop._id, location: coord, locationName, desc, type, status: 'Upcoming'}]);
+    setStops([...stops, { id: createdStop._id, startDate, location: coord, locationName, notes: createdStop.notes, desc, type, status: 'Upcoming'}]);
     setAddDesc(false);
   }
 

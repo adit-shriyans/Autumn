@@ -47,7 +47,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [inputValues, setInputValues] = useState({
     locationName: stop.locationName,
     inDate: stop.startDate || getTodaysDate(),
-    notesMsg: '',
+    notesMsg: stop.notes || '',
     desc: stop.desc,
     status: 'Upcoming',
   });
@@ -107,7 +107,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
   const saveStops = async () => {
     console.log(stop);
-    const {location, locationName, startDate, notes, desc, type} = stop
+    const {location, locationName, startDate, desc, type} = stop
     const res = await fetch(`/api/stop/${stop.id}`, {
         method: "PATCH",
         headers: {
@@ -118,7 +118,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
             locationName, 
             startDate, 
             desc, 
-            notes,
+            notes: inputValues.notesMsg,
             status: statusOptions[statusId],
             type,
         })
@@ -235,6 +235,11 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const handleStatusChange = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     setStatusId((prev) => ((prev + 1) % 3));
+    setStops(stops.map(s => {
+      const newStop = s;
+      if(stop.id === s.id) newStop.status = statusOptions[statusId];
+      return newStop;
+    }))
     saveStops();
   }
 
@@ -304,7 +309,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
   useEffect(() => {
     saveStops();
-  }, [inputValues]);
+  }, [inputValues.notesMsg, inputValues.inDate]);
 
   const handleAddRoute = () => {
     if (!added) {
