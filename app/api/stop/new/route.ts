@@ -13,7 +13,7 @@ export const POST = async (req: { json: () => PromiseLike<StopRequestType> | Sto
     try {
         await connectToDB();
 
-        const { userId, location, locationName, startDate, desc } = await req.json();
+        const { userId, location, locationName, startDate, desc, type, status } = await req.json();
 
         const newStop = new Stop({
             user: userId,
@@ -22,6 +22,8 @@ export const POST = async (req: { json: () => PromiseLike<StopRequestType> | Sto
             startDate,
             desc,
             notes: '',
+            type,
+            status,
         });
 
         await newStop.save();

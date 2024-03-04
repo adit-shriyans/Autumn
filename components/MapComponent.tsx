@@ -108,6 +108,7 @@ export default function MapComponent({ stops, routes, setStops, setDistances, zo
     const params = useParams();
 
     useEffect(() => {
+        console.log(coord);
         setZoomLocation(coord);
     }, [coord]);
 

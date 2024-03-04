@@ -9,6 +9,8 @@ interface StopRequestType {
     startDate: String; 
     notes: String;
     desc: String;
+    type: String;
+    status: String;
 }
 
 // GET
@@ -31,7 +33,7 @@ export const GET = async (request: Request | NextApiRequest, { params }: { param
 
 // PATCH
 export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> | StopRequestType; }, { params }: { params: { id: string } }) => {
-    const { location, locationName, startDate, desc, notes } = await request.json();
+    const { location, locationName, startDate, desc, notes, type, status } = await request.json();
 
     try {
         await connectToDB();
@@ -46,6 +48,8 @@ export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> 
         existingStop.startDate = startDate;
         existingStop.notes = notes;
         existingStop.desc = desc;
+        existingStop.type = type;
+        existingStop.status = status;
 
         await existingStop.save();
 

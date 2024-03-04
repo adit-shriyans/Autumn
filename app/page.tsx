@@ -44,20 +44,13 @@ const geocodingResponseSchema = z.object({
   boundingbox: z.array(z.string()),
 });
 
-const initialStop: MarkerLocation = {
-  id: '1',
-  location: [20.955031827976995, 79.07787539625832],
-  locationName: 'Umred, Nagpur Rural Taluka',
-  startDate: '2024-03-01', // Assuming a specific start date
-  desc: 'Pick up from here' // Assuming a description for the dummy stop
-};
-
 const MyPage = () => {
-  const [stops, setStops] = useState<MarkerLocation[]>([initialStop]);
+  const [stops, setStops] = useState<MarkerLocation[]>([]);
   const [routes, setRoutes] = useState<MarkerLocation[]>([]);
   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const { data: session } = useSession();
   const [desc, setDesc] = useState<string>('');
+  const [type, setType] = useState<string>('');
   const [addDesc, setAddDesc] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
   const [formData, setFormData] = useState('');
@@ -83,16 +76,16 @@ const MyPage = () => {
     }
   }, []);
 
-  const handleSendClick = async () => {
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
-    const data = await response.json();
+  // const handleSendClick = async () => {
+  //   const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
+  //   const data = await response.json();
 
-    const parsedData = geocodingResponseSchema.parse(data);
+  //   const parsedData = geocodingResponseSchema.parse(data);
 
-    const locationName = parsedData.display_name || 'Unknown Location';
+  //   const locationName = parsedData.display_name || 'Unknown Location';
 
-    setStops([...stops, { id: session?.user.id!, location: coord, locationName, desc }])
-  }
+  //   setStops([...stops, { id: session?.user.id!, location: coord, locationName, desc, type }])
+  // }
 
   return (
     <div>

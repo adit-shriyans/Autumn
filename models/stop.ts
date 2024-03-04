@@ -18,7 +18,13 @@ const StopSchema = new Schema({
     notes: {
         type: String,
     },
+    type: {
+        type: String,
+    },
     desc: {
+        type: String,
+    },
+    status: {
         type: String,
     },
 });

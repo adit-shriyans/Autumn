@@ -14,9 +14,10 @@ interface PIPropsType {
     setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
     setShowDropDown: React.Dispatch<React.SetStateAction<boolean>>;
     handleAddNotes: VoidFunctionType;
+    showDelete: boolean;
 }
 
-const UtilityDropDown = ({ stops, setStops, stop, setZoomLocation, setShowDropDown, handleAddNotes }: PIPropsType) => {
+const UtilityDropDown = ({ stops, setStops, stop, setZoomLocation, setShowDropDown, handleAddNotes, showDelete }: PIPropsType) => {
     const [copied, setCopied] = useState(false);
 
     const handleDelete = async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -72,7 +73,7 @@ const UtilityDropDown = ({ stops, setStops, stop, setZoomLocation, setShowDropDo
                     </div>
                 </div>
             </CopyToClipboard>
-            <div
+            {showDelete && <div
                 className='PlaceInfo__container PlaceInfo__container-delete'
                 onClick={handleDelete}
             >
@@ -82,8 +83,8 @@ const UtilityDropDown = ({ stops, setStops, stop, setZoomLocation, setShowDropDo
                 <div className='PlaceInfo__dropdown-text'>
                     Delete
                 </div>
-            </div>
-            <div
+            </div>}
+            {!showDelete && <div
                 className='PlaceInfo__container PlaceInfo__container-addNotes'
                 onClick={handleAddNotesClick}
             >
@@ -93,7 +94,7 @@ const UtilityDropDown = ({ stops, setStops, stop, setZoomLocation, setShowDropDo
                 <div className='PlaceInfo__dropdown-text'>
                     Add Notes
                 </div>
-            </div>
+            </div>}
         </div>
     )
 }

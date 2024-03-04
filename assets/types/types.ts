@@ -9,6 +9,8 @@ export type MarkerLocation = {
     id: string,
     location: L.LatLngTuple,
     locationName: string,
+    type: string,
+    status: string,
     startDate?: string,
     desc?: string,
     notes?: string,
@@ -37,6 +39,7 @@ export interface StopResponseType {
     notes: string;
     desc: string;
     startDate: string | null;
+    status: string;
     user: {
       _id: string;
       email: string;
@@ -46,6 +49,7 @@ export interface StopResponseType {
     };
     __v: number;
     _id: string;
+    type: string;
   }
 
 export type VoidFunctionType = () => void;

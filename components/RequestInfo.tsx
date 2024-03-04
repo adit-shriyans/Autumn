@@ -9,35 +9,24 @@ import EventIcon from '@mui/icons-material/Event';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import ChecklistIcon from '@mui/icons-material/Checklist';
 import DescriptionIcon from '@mui/icons-material/Description';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import UtilityDropDown from './UtilityDropDown';
 import { MarkerLocation } from '@assets/types/types';
 import { calculateDistance, getTodaysDate, isValidDate } from '@assets/CalcFunctions';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-interface PIPropsType {
+interface RIPropsType {
   distances: Number[];
   stop: MarkerLocation;
   stops: MarkerLocation[];
-  routes: MarkerLocation[];
-  dndEnable: boolean;
   setStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
-  setRoutes: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
   setTotalDistance: React.Dispatch<React.SetStateAction<number>>;
-  setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
 }
 
 const arraySize = 6;
 
-const statusOptions = ['Upcoming', 'Ongoing', 'Completed'];
-
-const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation, routes, setRoutes }: PIPropsType) => {
+const PlaceInfoContent = ({ distances, stop, stops, setStops, setTotalDistance }: RIPropsType) => {
   const locationNameArr = stop.locationName.split(',');
   let name = locationNameArr[0];
   if (locationNameArr.length > 1) {
@@ -47,9 +36,9 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [inputValues, setInputValues] = useState({
     locationName: stop.locationName,
     inDate: stop.startDate || getTodaysDate(),
+    // outDate: stop.endDate || getTodaysDate(),
     notesMsg: '',
     desc: stop.desc,
-    status: 'Upcoming',
   });
 
   const [distValues, setDistValues] = useState({
@@ -57,7 +46,6 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
     homeDist: 20,
   })
 
-  const [statusId, setStatusId] = useState(statusOptions.indexOf(stop.status.toString()));
   const [editMode, setEditMode] = useState(Array(arraySize).fill(false));
   const [showErr, setShowErr] = useState(Array(arraySize).fill(false));
   const [errMsg, setErrMsg] = useState('');
@@ -65,6 +53,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [showDropDown, setShowDropDown] = useState(false);
   const [addRoute, setAddRoute] = useState(false);
   const [added, setAdded] = useState(false);
+  const [zoomLocation, setZoomLocation] = useState<L.LatLngTuple>([50, 50]);
 
   const LNInputRef = useRef<HTMLInputElement | null>(null);
   const LDInputRef = useRef<HTMLInputElement | null>(null);
@@ -72,7 +61,6 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const IDInputRef = useRef<HTMLInputElement | null>(null);
   const ODInputRef = useRef<HTMLInputElement | null>(null);
   const NotesInputRef = useRef<HTMLInputElement | null>(null);
-  const StatusInputRef = useRef<HTMLInputElement | null>(null);
 
   const getLocationDist = () => {
     return distances[stops.indexOf(stop)] || 0;
@@ -105,32 +93,12 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
     }
   }
 
-  const saveStops = async () => {
-    console.log(stop);
-    const {location, locationName, startDate, notes, desc, type} = stop
-    const res = await fetch(`/api/stop/${stop.id}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            location, 
-            locationName, 
-            startDate, 
-            desc, 
-            notes,
-            status: statusOptions[statusId],
-            type,
-        })
-      })
-  }
-
   const handleDropdownClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
     setShowDropDown(() => (!showDropDown));
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement> | SelectChangeEvent<string>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setErrMsg('');
     setShowErr(Array(arraySize).fill(false));
 
@@ -142,7 +110,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
 
   const handleInputBlur = () => {
-    const { locationName, notesMsg } = inputValues
+    const { locationName, inDate, notesMsg } = inputValues
 
     if (locationName) {
         if (notesMsg === '')
@@ -154,6 +122,25 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
       focusOnEmptyField();
     }
   };
+
+  const saveStops = async () => {
+    console.log(stop);
+    const {location, locationName, startDate, notes, desc, type, status} = stop
+    const res = await fetch(`/api/stop/${stop.id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            location, 
+            locationName, 
+            startDate, 
+            desc, 
+            notes,
+            status, type,
+        })
+      })
+  }
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { locationName, inDate, notesMsg } = inputValues
@@ -183,13 +170,21 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
       LNInputRef.current.focus();
       setShowErr([true, false, false, false, false])
     }
-    else if (editMode[1] && StatusInputRef.current) {
-      StatusInputRef.current.focus();
+    else if (editMode[1] && LDInputRef.current) {
+      LDInputRef.current.focus();
       setShowErr([false, true, false, false, false])
+    }
+    else if (editMode[2] && HDInputRef.current) {
+      HDInputRef.current.focus();
+      setShowErr([false, false, true, false, false])
     }
     else if (editMode[3] && IDInputRef.current) {
       IDInputRef.current.focus();
       setShowErr([false, false, false, true, false])
+    }
+    else if (editMode[4] && ODInputRef.current) {
+      ODInputRef.current.focus();
+      setShowErr([false, false, false, false, true])
     }
   };
 
@@ -232,13 +227,6 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
     }
   }
 
-  const handleStatusChange = async (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    setStatusId((prev) => ((prev + 1) % 3));
-    saveStops();
-  }
-
-
   useEffect(() => {
     if (editMode[0] && LNInputRef.current) {
       LNInputRef.current.focus();
@@ -256,7 +244,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
   useEffect(() => {
     // updateStop();
-    if (!editMode[0]) {
+    if(!editMode[0]){
       const newStops = stops.map((place) => {
         if (place.id === stop.id) {
           place.locationName = inputValues.locationName;
@@ -265,8 +253,8 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
       });
       setStops(newStops);
     }
-    saveStops();
     // else LNInputRef?.current?.focus();
+    saveStops();
   }, [inputValues.locationName, editMode[0]])
 
   useEffect(() => {
@@ -284,11 +272,15 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
 
   useEffect(() => {
     setDists();
-  }, [distances]);
+  }, [distances])
+
+  useEffect(() => {
+    saveStops();
+  }, [stop.desc, inputValues.desc]);
 
   useEffect(() => {
     // updateStop();
-    if (!editMode[3] && !editMode[4] && !editMode[5]) {
+    if(!editMode[3] && !editMode[4] && !editMode[5]) {
       const newStops = stops.map((place) => {
         if (stop.id === place.id) {
           return { ...place, startDate: inputValues.inDate, notes: inputValues.notesMsg }
@@ -297,147 +289,177 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
       })
       setStops(newStops)
     }
-    else if (editMode[3]) IDInputRef.current?.focus();
-    else if (editMode[4]) ODInputRef.current?.focus();
-    else if (editMode[5]) NotesInputRef.current?.focus();
+    else if(editMode[3]) IDInputRef.current?.focus();
+    else if(editMode[4]) ODInputRef.current?.focus();
+    else if(editMode[5]) NotesInputRef.current?.focus();
   }, [inputValues.inDate, inputValues.notesMsg, editMode[3], editMode[4], editMode[5]]);
-
-  useEffect(() => {
-    saveStops();
-  }, [inputValues]);
-
-  const handleAddRoute = () => {
-    if (!added) {
-      setRoutes((prev) => [...prev, stop]);
-      setAdded(true);
-    }
-    else {
-      setRoutes(prev => prev.filter(route => route.id !== stop.id));
-    }
-  }
-
+  
   return (
     <div
       className='PlaceInfo'
-      onClick={() => { setZoomLocation(stop.location); setAddRoute(prev => !prev) }}
+    //   onClick={() => { setZoomLocation(stop.location); setAddRoute(prev => !prev) }}
     >
       <div
-        className='PlaceInfo__dropdownbtn-container'
-        tabIndex={0}
-        onFocusCapture={() => setShowDropDown(true)}
-        onBlurCapture={() => setShowDropDown(false)}
-      >
-        {showDropDown ?
-          (
-            <div className='PlaceInfo__dropdown-container'>
-              <ExpandLessIcon
-                className='PlaceInfo__dropdownbtn'
+          className='PlaceInfo__dropdownbtn-container'
+          tabIndex={0}
+          onFocusCapture={() => setShowDropDown(true)}
+          onBlurCapture={() => setShowDropDown(false)}
+        >
+          {showDropDown ?
+            (
+              <div className='PlaceInfo__dropdown-container'>
+                <ExpandLessIcon
+                  className='PlaceInfo__dropdownbtn'
+                  onClick={(e) => (handleDropdownClick(e))}
+                />
+                <UtilityDropDown showDelete={true} setStops={setStops} setZoomLocation={setZoomLocation} stop={stop} stops={stops} setShowDropDown={setShowDropDown} handleAddNotes={handleAddNotes} />
+              </div>
+            ) :
+            (
+              <ExpandMoreIcon
+                className='PlaceInfo__dropdownbtn PlaceInfo__dropdownbtnop'
                 onClick={(e) => (handleDropdownClick(e))}
               />
-              <UtilityDropDown showDelete={false} setStops={setStops} setZoomLocation={setZoomLocation} stop={stop} stops={stops} setShowDropDown={setShowDropDown} handleAddNotes={handleAddNotes} />
-            </div>
-          ) :
-          (
-            <ExpandMoreIcon
-              className='PlaceInfo__dropdownbtn PlaceInfo__dropdownbtnop'
-              onClick={(e) => (handleDropdownClick(e))}
-            />
-          )
-        }
-      </div>
-      <div className='PlaceInfo__info'>
-        <div className='PlaceInfo__img-container'>
-          <FontAwesomeIcon className='PlaceInfo__img' icon={faMapLocationDot} />
+            )
+          }
         </div>
-        <div className={`ErrorPopUp ${showErr[0] && errMsg ? '' : 'hidden'}`}>
-          {errMsg}
-        </div>
-        <div
-          className='PlaceInfo__name PlaceInfo__content'
-          onClick={() => handleClick(0)}
-        >
-          {inputValues.locationName}
-        </div>
-      </div>
-      <div className='PlaceInfo__DateInfo'>
         <div className='PlaceInfo__info'>
           <div className='PlaceInfo__img-container'>
-            <TodayIcon className='PlaceInfo__img' />
+            <FontAwesomeIcon className='PlaceInfo__img' icon={faMapLocationDot} />
+          </div>
+          <div className={`ErrorPopUp ${showErr[0] && errMsg ? '' : 'hidden'}`}>
+            {errMsg}
           </div>
           <div
-            className='PlaceInfo__indate PlaceInfo__date PlaceInfo__content'
+            className='PlaceInfo__name PlaceInfo__content'
+            onClick={() => handleClick(0)}
           >
-            {inputValues.inDate}
+            {editMode[0] ? (
+              <form className='PlaceInfo__form'>
+                <input
+                  className='PlaceInfo__input'
+                  type='text'
+                  value={inputValues.locationName}
+                  placeholder='Location Name'
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleInputKeyDown}
+                  ref={LNInputRef}
+                  name='locationName'
+                />
+              </form>
+            ) : (
+              `${inputValues.locationName}`
+            )}
           </div>
         </div>
-      </div>
-      <div className='PlaceInfo__info'>
-        <div className='PlaceInfo__img-container'>
-          <DescriptionIcon />
+        <div className='PlaceInfo__DateInfo'>
+          <div className='PlaceInfo__info'>
+            <div className='PlaceInfo__img-container'>
+              <TodayIcon className='PlaceInfo__img' />
+            </div>
+            <div
+              className='PlaceInfo__indate PlaceInfo__date PlaceInfo__content'
+            >
+                {stop.startDate}
+            </div>
+          </div>
+          {/* <div className='PlaceInfo__info'>
+            <div className='PlaceInfo__img-container'>
+              <EventIcon className='PlaceInfo__img' />
+            </div>
+            <div className={`ErrorPopUp ${showErr[4] && errMsg ? '' : 'hidden'}`}>
+              {errMsg}
+            </div> */}
+            {/* <div
+              className='PlaceInfo__outdate PlaceInfo__date PlaceInfo__content'
+              onClick={() => handleClick(4)}
+            >
+              {editMode[4] ? (
+                <form className='PlaceInfo__form'>
+                  <input
+                    className='PlaceInfo__input PlaceInfo__input-date'
+                    type='text'
+                    value={inputValues.outDate}
+                    placeholder='Check-Out Date'
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                    onKeyDown={handleInputKeyDown}
+                    ref={ODInputRef}
+                    name="outDate"
+                  />
+                </form>
+              ) : (
+                `${inputValues.outDate}`
+              )}
+            </div> */}
+          {/* </div> */}
         </div>
-        <div
-          className='PlaceInfo__notes PlaceInfo__content'
-        >
-          {stop.desc}
-        </div>
-      </div>
-      <div className={`PlaceInfo__info ${showNotes || inputValues.notesMsg !== '' ? '' : 'hidden'}`}>
-        <div className='PlaceInfo__img-container'>
-          <EditNoteIcon />
-        </div>
-        <div
-          className='PlaceInfo__notes PlaceInfo__content'
-          onClick={() => handleClick(5)}
-        >
-          {editMode[5] ? (
-            <form className='PlaceInfo__form'>
-              <input
-                className='PlaceInfo__input'
-                type='text'
-                value={inputValues.notesMsg}
-                placeholder='Add notes'
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                onKeyDown={handleInputKeyDown}
-                ref={NotesInputRef}
-                name="notesMsg"
-              />
-            </form>
-          ) : (
-            `${inputValues.notesMsg}`
-          )}
-        </div>
-      </div>
-      <div className='PlaceInfo__info'>
-        <ChecklistIcon />
-        <div
-          className='PlaceInfo__notes PlaceInfo__content'  
-            onClick={handleStatusChange}
+        {/* <div className='PlaceInfo__DistInfo'>
+          <div className='PlaceInfo__info'>
+            <div className='PlaceInfo__img-container'>
+              <FontAwesomeIcon className='PlaceInfo__img' icon={faRoute} />
+            </div>
+            <div
+              className='PlaceInfo__prevdist PlaceInfo__dist PlaceInfo__content'
+            >
+              {distValues.locationDist}km
+            </div>
+          </div>
+          <div className='PlaceInfo__info'>
+            <div className='PlaceInfo__img-container'>
+              <HomeIcon className='PlaceInfo__img PlaceInfo__img-distance' />
+            </div>
+            <div
+              className='PlaceInfo__prevdist PlaceInfo__dist PlaceInfo__content'
+            >
+              {distValues.homeDist}km
+            </div>
+          </div>
+        </div> */}
+        <div className={`PlaceInfo__info ${showNotes || inputValues.notesMsg !== '' ? '' : 'hidden'}`}>
+          <div className='PlaceInfo__img-container'>
+            <EditNoteIcon />
+          </div>
+          {/* <div
+            className='PlaceInfo__notes PlaceInfo__content'
+            onClick={() => handleClick(5)}
           >
-            {statusOptions[statusId].replace(/^./, (char) => char.toUpperCase())}
+            {inputValues.desc}
+          </div> */}
+          <div
+            className='PlaceInfo__notes PlaceInfo__content'
+            onClick={() => handleClick(5)}
+          >
+            {editMode[5] ? (
+              <form className='PlaceInfo__form'>
+                <input
+                  className='PlaceInfo__input'
+                  type='text'
+                  value={inputValues.desc}
+                  placeholder='Add notes'
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleInputKeyDown}
+                  ref={NotesInputRef}
+                  name="notesMsg"
+                />
+              </form>
+            ) : (
+              `${stop.desc}`
+            )}
+            </div>
         </div>
-      </div>
-      {addRoute && (
-        <button onClick={handleAddRoute} className='addRouteBtn'>
-          Add Route
-        </button>
-      )}
     </div>
   )
 }
 
-const PlaceInfo = ({ distances, stop, stops, dndEnable, setStops, setTotalDistance, setZoomLocation, routes, setRoutes }: PIPropsType) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: stop.id });
-  const DndStyles = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  }
-
+const PlaceInfo = ({ distances, stop, stops, setStops, setTotalDistance }: RIPropsType) => {
   return (
-    <div>
-      <PlaceInfoContent distances={distances} stop={stop} stops={stops} dndEnable={dndEnable} setStops={setStops} setTotalDistance={setTotalDistance} setZoomLocation={setZoomLocation} routes={routes} setRoutes={setRoutes} />
-    </div>
-  )
+      <div>
+        <PlaceInfoContent distances={distances} stop={stop} stops={stops} setStops={setStops} setTotalDistance={setTotalDistance} />
+      </div>
+    )
 };
 
 export default PlaceInfo;

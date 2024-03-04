@@ -5,10 +5,16 @@ import { SetStateAction, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import type { DefaultSession } from 'next-auth';
 import { Box, Button, TextField } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SendIcon from '@mui/icons-material/Send';
-import { MarkerLocation } from '@assets/types/types';
+import { MarkerLocation, StopResponseType } from '@assets/types/types';
 import { z, ZodError } from 'zod';
 import '../styles/css/Resident.css';
+import PlaceInfo from './PlaceInfo';
+import RequestInfo from './RequestInfo';
 
 declare module 'next-auth' {
   interface Session {
@@ -43,23 +49,43 @@ interface RPropsType {
     coord: L.LatLngTuple;
 }
 
+const types = ['Fire', 'Earthquake', 'Flood', 'Gas Leak', 'Pest Control', 'Security Breach', 'Wild Animal', 'Robbery/Tresspassing', 'Accident'];
+types.sort();
+
 const Resident = ({stops, setStops, coord}: RPropsType) => {
 //   const [stops, setStops] = useState<MarkerLocation[]>([]);
 //   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const { data: session } = useSession();
   const [desc, setDesc] = useState<string>('');
+  const [type, setType] = useState<string>('');
   const [addDesc, setAddDesc] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
   const [locationName, setLocationName] = useState('');
+  const [distances, setDistances] = useState<Number[]>([]);
+  const [distance, setDistance] = useState<number>(0);
+  const [userStops, setUserStops] = useState<MarkerLocation[]>([]);
 
   useEffect(() => {
     // Fetch current date and format it as dd-mm-yyyy
     const currentDate = new Date();
     const day = String(currentDate.getDate()).padStart(2, '0');
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const year = currentDate.getFullYear();
     const formattedDate = `${day}-${month}-${year}`;
     setStartDate(formattedDate);
+
+    const fetchUserStops = async () => {
+      const response = await fetch(`/api/stop/${session?.user.id}`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+      console.log(data);
+
+      setUserStops(data.map((stop: StopResponseType) => {
+        return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
+      }))
+    }
+    fetchUserStops();
   }, []);
 
   useEffect(() => {
@@ -82,7 +108,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
     const locationName = parsedData.display_name || 'Unknown Location';
     setLocationName(locationName);
 
-    console.log(session?.user.id, coord, locationName, startDate, desc);
+    console.log(session?.user.id, desc, type);
 
     const createStopResponse = await fetch("/api/stop/new", {
           method: "POST",
@@ -93,6 +119,8 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
               startDate,
               desc,
               notes: '',
+              type,
+              status: 'Upcoming',
           }),
           headers: {
               'Content-Type': 'application/json',
@@ -105,10 +133,8 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
       }
 
       const createdStop = await createStopResponse.json();
-      console.log(createdStop);
-      
 
-    setStops([...stops, { id: createdStop._id, location: coord, locationName, desc }]);
+    setStops([...stops, { id: createdStop._id, location: coord, locationName, desc, type, status: 'Upcoming'}]);
     setAddDesc(false);
   }
 
@@ -142,6 +168,20 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
                   // placeholder="Add description"
                   multiline
                 />
+                <InputLabel id="demo-simple-select-label">Type</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={type}
+                  label="Type"
+                  onChange={(event) => {
+                    setType(event.target.value);
+                  }}
+                >
+                  {types.map((type) => (
+                    <MenuItem value={type}>{type}</MenuItem>
+                  ))}
+                </Select>
               </div>
             </Box>
             <Button variant='outlined' className='Resident__garbageInfo-send' onClick={handleSendClick}>
@@ -149,6 +189,18 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
             </Button>
             </>
           )}
+        </div>
+        <div className='Resident__requests'>
+          <div className='Resident__requests-heading'>
+            Your Requests
+          </div>
+          <div className='Resident__requests-requests'>
+            {stops.map((stop) => (
+              <div className='Resident__requests-requests'>
+                <RequestInfo distances={distances} setTotalDistance={setDistance} stops={userStops} setStops={setStops} stop={stop} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

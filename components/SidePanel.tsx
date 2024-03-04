@@ -20,6 +20,7 @@ import '../node_modules/leaflet-geosearch/dist/geosearch.css';
 import { SearchResult } from 'leaflet-geosearch/dist/providers/provider.js';
 import { RawResult } from 'leaflet-geosearch/dist/providers/openStreetMapProvider.js';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSession } from 'next-auth/react';
 
 interface SPPropsType {
   distances: Number[];
@@ -64,6 +65,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
   const inputRef = useRef<HTMLInputElement | null>(null);
   const addStopRef = useRef<HTMLDivElement>(null);
 
+  const {data: session} = useSession();
   const params = useParams();
 
   useEffect(() => {
@@ -155,13 +157,14 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
     const createStopResponse = await fetch("/api/stop/new", {
       method: "POST",
       body: JSON.stringify({
-        stopId: stops.length,
-        tripId: params.id,
-        location: [latitude, longitude],
-        locationName: locationName,
-        startDate: '',
-        endDate: '',
-        notes: ''
+              userId: session?.user.id,
+              location: coord,
+              locationName,
+              startDate: getTodaysDate(),
+              desc: '',
+              notes: '',
+              type: 'Manual',
+              status: 'Upcoming',
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -175,7 +178,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
 
     const createdStop = await createStopResponse.json();
 
-    setStops([...stops, { id: createdStop._id, location: createdStop.location, locationName: createdStop.locationName }])
+    setStops([...stops, { id: createdStop._id, location: createdStop.location, locationName: createdStop.locationName, type: 'Manual', status: 'Manual' }])
   }
 
   const handleAddFormChange = async (e: ChangeEvent<HTMLInputElement>) => {
