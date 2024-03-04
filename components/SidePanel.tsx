@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState, ChangeEvent, useRef, useMemo } from 'react';
 import '../styles/css/SidePanel.css';
-// import '@styles/css/Si'
-// import '../styles/css/'
 import PlaceInfo from './PlaceInfo';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -20,6 +18,11 @@ import '../node_modules/leaflet-geosearch/dist/geosearch.css';
 import { SearchResult } from 'leaflet-geosearch/dist/providers/provider.js';
 import { RawResult } from 'leaflet-geosearch/dist/providers/openStreetMapProvider.js';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useSession } from 'next-auth/react';
 
 interface SPPropsType {
@@ -31,6 +34,8 @@ interface SPPropsType {
   setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
   coord: L.LatLngTuple;
 }
+
+const types = ['Fire', 'Earthquake', 'Flood', 'Gas Leak', 'Pest Control', 'Security Breach', 'Wild Animal', 'Robbery/Tresspassing', 'Accident'];
 
 const geocodingResponseSchema = z.array(
   z.object({
@@ -65,17 +70,59 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
   const inputRef = useRef<HTMLInputElement | null>(null);
   const addStopRef = useRef<HTMLDivElement>(null);
 
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   const params = useParams();
+
+  const [selectedType, setSelectedType] = useState<string>('All');
+  const [selectedStatus, setSelectedStatus] = useState<string>('All');
+  const [sortOrder, setSortOrder] = useState<string>('asc');
+
+  // Function to group stops by types
+  const groupByType = (stops: MarkerLocation[], type: string) => {
+    if (type === 'All') return stops;
+    return stops.filter(stop => stop.type === type);
+  };
+
+  // Function to group stops by status
+  const groupByStatus = (stops: MarkerLocation[], status: string) => {
+    if (status === 'All') return stops;
+    return stops.filter(stop => stop.status === status);
+  };
+
+  // Function to sort stops by date
+  const sortStopsByDate = (stops: MarkerLocation[], sortOrder: string) => {
+    const filteredStops = stops.filter(stop => stop.startDate !== undefined);
+    
+    const sortedStops = filteredStops.sort((a, b) => {
+      if (a.startDate && b.startDate) {
+        return sortOrder === 'asc' 
+          ? new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          : new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+      }
+      return 0; // Handle case where startDate is undefined
+    });
+  
+    return sortedStops;
+  };
+  
+
+  // Filtered and sorted stops
+  const filteredStops = useMemo(() => {
+    let filtered = groupByType(stops, selectedType);
+    filtered = groupByStatus(filtered, selectedStatus);
+    filtered = sortStopsByDate(filtered, sortOrder);
+    return filtered;
+  }, [stops, selectedType, selectedStatus, sortOrder]);
+
+  useEffect(() => {
+    console.log(filteredStops);
+  }, [filteredStops]);
 
   useEffect(() => {
     let dist = 0;
     let sDate = stops[0]?.startDate || getTodaysDate();
-    // let eDate = stops[stops.length - 1]?.endDate || getTodaysDate();
-    // if (sDate && eDate && isValidDate(sDate) && isValidDate(eDate)) setTripDates([sDate, eDate]);
     for (let i = 0; i < stops.length; i++) {
       if (stops[i].startDate !== undefined && compareDates(stops[i].startDate!, tripDates[0]) === -1) setTripDates([stops[i].startDate!, tripDates[1]])
-      // if (stops[i].endDate !== undefined && compareDates(stops[i].endDate!, tripDates[1]) === 1) setTripDates([tripDates[0], stops[i].endDate!])
       if (i === 0) dist += parseFloat(calculateDistance(stops[i].location, coord).toFixed(2))
       else dist += parseFloat(calculateDistance(stops[i].location, stops[i - 1].location).toFixed(2))
     }
@@ -157,14 +204,14 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
     const createStopResponse = await fetch("/api/stop/new", {
       method: "POST",
       body: JSON.stringify({
-              userId: session?.user.id,
-              location: coord,
-              locationName,
-              startDate: getTodaysDate(),
-              desc: '',
-              notes: '',
-              type: 'Manual',
-              status: 'Upcoming',
+        userId: session?.user.id,
+        location: coord,
+        locationName,
+        startDate: getTodaysDate(),
+        desc: '',
+        notes: '',
+        type: 'Manual',
+        status: 'Upcoming',
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -246,6 +293,52 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
           </div>
         </div>
       </div>
+      <div className='TripInfo__categories'>
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel>Select Type</InputLabel>
+          <Select
+            value={selectedType}
+            onChange={(e: SelectChangeEvent<string>) => setSelectedType(e.target.value)}
+          >
+            <MenuItem value="All">All</MenuItem>
+            {types.map(type => (
+              <MenuItem key={type} value={type}>{type}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {/* Selector for status */}
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel>Select Status</InputLabel>
+          <Select
+            value={selectedStatus}
+            onChange={(e: SelectChangeEvent<string>) => setSelectedStatus(e.target.value)}
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+            <MenuItem value="Ongoing">Ongoing</MenuItem>
+            <MenuItem value="Upcoming">Upcoming</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      {/* Selector for sort order */}
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel>Sort By Date</InputLabel>
+          <Select
+            value={sortOrder}
+            onChange={(e: SelectChangeEvent<string>) => setSortOrder(e.target.value)}
+          >
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      </div>
       <div
         className='addStop'
         ref={addStopRef}
@@ -299,18 +392,9 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
           Your Location
         </div>
       </div>
-      {/* <div className='DragNDrop'>
-        <input 
-          className='DragNDrop__box' 
-          onChange={() => setDndEnable(prev => !prev)} 
-          type="checkbox" 
-          checked={dndEnable}
-        /> */}
-        {/* <div className='DragNDrop__text'>Reorder</div> */}
-      {/* </div> */}
       {stops.length > 0 ? (
         <div className='StopInfo__container'>
-          <SortableContext 
+          <SortableContext
             items={stops}
             strategy={verticalListSortingStrategy}
           >
