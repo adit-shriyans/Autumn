@@ -8,8 +8,11 @@ import { useParams } from 'next/navigation';
 import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { Button } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useRouter } from 'next/navigation';
 
-const DynamicMapComponent = dynamic(() => import("@components/MapComponent"), { ssr: false });
+// const DynamicMapComponent = dynamic(() => import("@components/MapComponent"), { ssr: false });
 
 interface OfficerPropsType {
     stops: MarkerLocation[];
@@ -23,6 +26,7 @@ const Officer = ({stops, setStops, routes, setRoutes, coord}: OfficerPropsType )
 //   const [stops, setStops] = useState<MarkerLocation[]>([]);
 //   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const [zoomLocation, setZoomLocation] = useState<L.LatLngTuple>([51.505, -0.09]);
+  const router = useRouter();
   const [distances, setDistances] = useState<Number[]>([]);
 //   const [showModal, setShowModal] = useState(false);
 
@@ -67,7 +71,7 @@ const Officer = ({stops, setStops, routes, setRoutes, coord}: OfficerPropsType )
       data.sort((a: { id: number; }, b: { id: number; }) => a.id-b.id);
 
       setStops(data.map((stop: StopResponseType) => {
-        return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, endDate: stop.endDate, notes: stop.notes }
+        return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, notes: stop.notes }
       }))
     };
 
@@ -76,8 +80,15 @@ const Officer = ({stops, setStops, routes, setRoutes, coord}: OfficerPropsType )
 
   return (
     <div className="TripPage">
-      <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} />
-      <DynamicMapComponent stops={stops} setStops={setStops} setDistances={setDistances} zoomLocation={zoomLocation} setZoomLocation={setZoomLocation} coord={coord} routes={routes} />
+      <div>
+        Notifications
+      </div>
+      <div>
+        Eemrgencies
+      </div>
+      <Button variant='outlined' onClick={() => (router.push('/map'))}> <OpenInNewIcon /> View Map</Button>
+      {/* <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} />
+      <DynamicMapComponent stops={stops} setStops={setStops} setDistances={setDistances} zoomLocation={zoomLocation} setZoomLocation={setZoomLocation} coord={coord} routes={routes} /> */}
     </div>
   );
 };

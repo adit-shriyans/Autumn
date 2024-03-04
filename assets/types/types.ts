@@ -10,7 +10,8 @@ export type MarkerLocation = {
     location: L.LatLngTuple,
     locationName: string,
     startDate?: string,
-    desc?: string
+    desc?: string,
+    notes?: string,
 }
 
 export type searchResultType = {
@@ -30,17 +31,17 @@ export type StatusType = {
 }
 
 export interface StopResponseType {
-    endDate: string | null;
     id: string;
     location: [number, number];
     locationName: string;
     notes: string;
+    desc: string;
     startDate: string | null;
-    trip: {
+    user: {
       _id: string;
-      user: string;
-      id: string;
-      status: string;
+      email: string;
+      username: string;
+      image: string;
       __v: number;
     };
     __v: number;

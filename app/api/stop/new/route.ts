@@ -5,26 +5,30 @@ import { v4 } from 'uuid';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest } from 'next/server';
 
-export const POST = async (req, res) => {
+interface StopRequestType extends MarkerLocation {
+    userId: String;
+}
+
+export const POST = async (req: { json: () => PromiseLike<StopRequestType> | StopRequestType; }) => {
     try {
         await connectToDB();
 
-        const { userId, location, locationName, startDate, desc } = req.body;
+        const { userId, location, locationName, startDate, desc } = await req.json();
 
         const newStop = new Stop({
-            id: v4(),
-            userId,
+            user: userId,
             location,
             locationName,
             startDate,
-            desc
+            desc,
+            notes: '',
         });
 
         await newStop.save();
 
-        return res.status(201).json(newStop);
+        return new Response(JSON.stringify(newStop), { status: 201 })
     } catch (error) {
         console.error("Error creating stop:", error);
-        return res.status(500).json({ error: "Failed to create new stop" });
+        return new Response("Failed to create new stop", { status: 500 });
     }
 };

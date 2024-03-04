@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import Provider from '@components/Provider'
 import { Session } from 'next-auth';
 import '@styles/css/index.css';
+import { ReduxProvider } from '@redux/provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,12 +16,14 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
   return (
     <html lang="en">
       <body className='Root' style={{ margin: 0 }}>
+        <ReduxProvider>
         <Provider session={session}>
           <Navbar />
           <main className='App'>
             {children}
           </main>
         </Provider>
+        </ReduxProvider>
       </body>
     </html>
   )

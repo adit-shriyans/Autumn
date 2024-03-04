@@ -1,13 +1,9 @@
-import { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
 const StopSchema = new Schema({
-    trip: {
-        type: Schema.Types.ObjectId,
-        ref: "Trip",
-    },
-    id: {
-        type: Number,
-        required: [true, 'Stop Id is required'],
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     location: {
         type: [Number],
@@ -19,10 +15,10 @@ const StopSchema = new Schema({
     startDate: {
         type: String,
     },
-    endDate: {
+    notes: {
         type: String,
     },
-    notes: {
+    desc: {
         type: String,
     },
 });

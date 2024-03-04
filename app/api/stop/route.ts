@@ -1,12 +1,14 @@
 import { connectToDB } from '@utils/database';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stop from '@models/stop';
+import { NextRequest } from 'next/server';
 
-export const GET = async (request) => {
+export const GET = async (request: NextRequest) => {
     try{
         await connectToDB();
-
-        const stops = await Stop.find({}).populate('trip');
+        
+        const stops = await Stop.find({}).populate('user');
+        console.log(stops);
 
         return new Response(JSON.stringify(stops), {
             status: 200

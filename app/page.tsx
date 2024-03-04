@@ -11,6 +11,10 @@ import { z, ZodError } from 'zod';
 import {v4} from 'uuid';
 import Officer from '@components/Officer';
 import Resident from '@components/Resident';
+import {setArr, setBool} from '@redux/features/user-slice';
+import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, useAppSelector } from '@redux/store';
+import { useRouter } from 'next/navigation';
 
 declare module 'next-auth' {
   interface Session {
@@ -56,6 +60,11 @@ const MyPage = () => {
   const [desc, setDesc] = useState<string>('');
   const [addDesc, setAddDesc] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
+  const [formData, setFormData] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
+  const strArr = useAppSelector(state => state.userReducer.arr);
+  const router = useRouter();
+
   
   // const {data: session} = useSession();
 
@@ -86,11 +95,12 @@ const MyPage = () => {
 
     const locationName = parsedData.display_name || 'Unknown Location';
 
-    setStops([...stops, { id: v4(), location: coord, locationName, desc }])
+    setStops([...stops, { id: session?.user.id!, location: coord, locationName, desc }])
   }
 
   return (
     <div>
+      {/* <Resident stops={stops} setStops={setStops} coord={coord} /> */}
       {session?.user.role === 'admin' ? (<Officer stops={stops} setStops={setStops} coord={coord} routes={routes} setRoutes={setRoutes} />) : (<Resident stops={stops} setStops={setStops} coord={coord} />)}
     </div>
   );

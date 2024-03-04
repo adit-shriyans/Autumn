@@ -299,7 +299,7 @@
   justify-content: space-between;
 }
 .PlaceInfo__date {
-  width: 3.9rem;
+  width: fit-content;
 }
 .PlaceInfo__DistInfo {
   display: flex;

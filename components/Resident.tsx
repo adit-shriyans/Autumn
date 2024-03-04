@@ -8,7 +8,6 @@ import { Box, Button, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { MarkerLocation } from '@assets/types/types';
 import { z, ZodError } from 'zod';
-import {v4} from 'uuid';
 import '../styles/css/Resident.css';
 
 declare module 'next-auth' {
@@ -79,13 +78,37 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
   const handleSendClick = async () => {
     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
     const data = await response.json();
-
     const parsedData = geocodingResponseSchema.parse(data);
-
     const locationName = parsedData.display_name || 'Unknown Location';
     setLocationName(locationName);
 
-    setStops([...stops, { id: v4(), location: coord, locationName, desc }]);
+    console.log(session?.user.id, coord, locationName, startDate, desc);
+
+    const createStopResponse = await fetch("/api/stop/new", {
+          method: "POST",
+          body: JSON.stringify({
+              userId: session?.user.id,
+              location: coord,
+              locationName,
+              startDate,
+              desc,
+              notes: '',
+          }),
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+
+      if (!createStopResponse.ok) {
+          console.error('Failed to create trip:', createStopResponse.statusText);
+          return;
+      }
+
+      const createdStop = await createStopResponse.json();
+      console.log(createdStop);
+      
+
+    setStops([...stops, { id: createdStop._id, location: coord, locationName, desc }]);
     setAddDesc(false);
   }
 
@@ -94,7 +117,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
       <div className='Resident__container'>
         <div className='Resident__location'>
           Your Location
-          <div className='Resident__location-name'>{locationName}</div>
+          <div className='Resident__location-name'>Umred, Nagpur Rural Taluka, Nagpur, Maharashtra, 441108, India</div>
         </div>
         <div className='Resident__garbageInfo'>
           <Button variant='outlined' className='Resident__garbageInfo-mark' onClick={() => (setAddDesc(prev => !prev))}>Mark Garbage</Button>
