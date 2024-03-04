@@ -1,8 +1,7 @@
 "use client";
+
 import '@styles/css/index.css'
 import { MarkerLocation, StopResponseType, TripType } from '@assets/types/types';
-import SidePanel from "@components/SidePanel";
-import dynamic from "next/dynamic";
 import { SetStateAction, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core';
@@ -12,7 +11,6 @@ import { Button } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useRouter } from 'next/navigation';
 
-// const DynamicMapComponent = dynamic(() => import("@components/MapComponent"), { ssr: false });
 
 interface OfficerPropsType {
     stops: MarkerLocation[];
@@ -62,21 +60,21 @@ const Officer = ({stops, setStops, routes, setRoutes, coord}: OfficerPropsType )
 //     }
 //   }, []);
 
-  useEffect(() => {
-    const fetchStops = async () => {
-      const response = await fetch(`/api/stop/${params?.id}`, {
-        method: 'GET'
-      });
-      const data = await response.json();
-      data.sort((a: { id: number; }, b: { id: number; }) => a.id-b.id);
+  // useEffect(() => {
+  //   const fetchStops = async () => {
+  //     const response = await fetch(`/api/stop/${params?.id}`, {
+  //       method: 'GET'
+  //     });
+  //     const data = await response.json();
+  //     data.sort((a: { id: number; }, b: { id: number; }) => a.id-b.id);
 
-      setStops(data.map((stop: StopResponseType) => {
-        return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, notes: stop.notes }
-      }))
-    };
+  //     setStops(data.map((stop: StopResponseType) => {
+  //       return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, notes: stop.notes }
+  //     }))
+  //   };
 
-    if (params?.id) fetchStops();
-  }, [params.id]);
+  //   if (params?.id) fetchStops();
+  // }, [params.id]);
 
   return (
     <div className="TripPage">
@@ -87,8 +85,6 @@ const Officer = ({stops, setStops, routes, setRoutes, coord}: OfficerPropsType )
         Eemrgencies
       </div>
       <Button variant='outlined' onClick={() => (router.push('/map'))}> <OpenInNewIcon /> View Map</Button>
-      {/* <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} />
-      <DynamicMapComponent stops={stops} setStops={setStops} setDistances={setDistances} zoomLocation={zoomLocation} setZoomLocation={setZoomLocation} coord={coord} routes={routes} /> */}
     </div>
   );
 };

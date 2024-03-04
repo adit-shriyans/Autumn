@@ -2,11 +2,9 @@
 
 import { MarkerLocation, StopResponseType } from '@assets/types/types';
 import SidePanel from '@components/SidePanel';
-import { useAppSelector } from '@redux/store';
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react';
 import dynamic from "next/dynamic";
-import { useParams } from 'next/navigation';
 const DynamicMapComponent = dynamic(() => import("@components/MapComponent"), { ssr: false });
 
 const page = () => {
@@ -24,13 +22,11 @@ const page = () => {
         });
         const data = await response.json();
         // data.sort((a: { startDate: number; }, b: { id: number; }) => a.id-b.id);
-        console.log(data);
   
         setStops(data.map((stop: StopResponseType) => {
           return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes }
         }))
       };
-      console.log("OKOKOK");
       
       fetchStops();
     }, []);

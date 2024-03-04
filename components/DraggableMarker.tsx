@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState, useRef, useMemo, useCallback, FC } from 'react';
 import L, { LatLngExpression } from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';

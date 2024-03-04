@@ -8,7 +8,6 @@ export const GET = async (request: NextRequest) => {
         await connectToDB();
         
         const stops = await Stop.find({}).populate('user');
-        console.log(stops);
 
         return new Response(JSON.stringify(stops), {
             status: 200

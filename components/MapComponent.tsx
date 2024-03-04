@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useEffect, FC, useRef, useState, MouseEvent } from 'react';
 import L, { Map } from 'leaflet';
@@ -133,8 +133,8 @@ export default function MapComponent({ stops, routes, setStops, setDistances, zo
 
     function handleToggleRoutes(e: MouseEvent<SVGSVGElement>): void {
         e.stopPropagation();
-        if (showRoutes) document.querySelector('.MapContainer__routes')?.classList.add('hidden');
-        else document.querySelector('.MapContainer__routes')?.classList.remove('hidden');
+        if (showRoutes && document) document.querySelector('.MapContainer__routes')?.classList.add('hidden');
+        else if(!showRoutes && document) document.querySelector('.MapContainer__routes')?.classList.remove('hidden');
         setShowRoutes((prev) => !prev);
     }
 
@@ -146,7 +146,7 @@ export default function MapComponent({ stops, routes, setStops, setDistances, zo
     return (
         <div className="MapComponent">
             <div className='MapContainer__userBtns'>
-                {/* <div className='MapContainer__save' onClick={handleSaveClick}>
+                {/* <div className='MapContainer__save' onClick={() => {}}>
                     Save
                 </div> */}
                 <DirectionsCarIcon className='MapContainer__carIcon' onClick={handleToggleRoutes} />

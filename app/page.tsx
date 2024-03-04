@@ -61,10 +61,6 @@ const MyPage = () => {
   const [addDesc, setAddDesc] = useState(false);
   const [startDate, setStartDate] = useState<string>('');
   const [formData, setFormData] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
-  const strArr = useAppSelector(state => state.userReducer.arr);
-  const router = useRouter();
-
   
   // const {data: session} = useSession();
 

@@ -16,7 +16,7 @@ import { z, ZodError } from 'zod';
 import { calculateDistance, compareDates, getNumberOfDays, getTodaysDate, isValidDate } from '@assets/CalcFunctions';
 import { useParams } from 'next/navigation';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
-import '@node_modules/leaflet-geosearch/dist/geosearch.css';
+import '../node_modules/leaflet-geosearch/dist/geosearch.css';
 import { SearchResult } from 'leaflet-geosearch/dist/providers/provider.js';
 import { RawResult } from 'leaflet-geosearch/dist/providers/openStreetMapProvider.js';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
