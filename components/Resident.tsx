@@ -143,7 +143,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
       <div className='Resident__container'>
         <div className='Resident__location'>
           Your Location
-          <div className='Resident__location-name'>Umred, Nagpur Rural Taluka, Nagpur, Maharashtra, 441108, India</div>
+          <div className='Resident__location-name'>{locationName}</div>
         </div>
         <div className='Resident__victimInfo'>
           <Button variant='outlined' className='Resident__victimInfo-mark' onClick={() => (setAddDesc(prev => !prev))}>Mark emergency</Button>
