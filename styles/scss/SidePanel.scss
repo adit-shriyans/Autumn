@@ -31,6 +31,15 @@
         color: white;
         font-size: 1.5rem;
         text-align: center;
+
+        &-arrow {
+            opacity: 0;
+
+            &:hover {
+                opacity: 1;
+                cursor: pointer;
+            }
+        }
     }
 
     &__Home {
@@ -69,6 +78,12 @@
         -webkit-border-radius: 10px;
         border-radius: 10px;
         background: #797979;
+    }
+
+    &:hover {
+        &__heading-arrow {
+            opacity: 0.7;
+        }
     }
 }
 
@@ -141,6 +156,20 @@
             height: fit-content;
             text-align: center;
             margin-right: 0.3rem;
+        }
+    }
+
+    &__categories {
+        padding: 0.2rem;
+
+        .MuiBox-root {
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        &-form {
+            color: #fff;
+            margin-bottom: 0.25rem;
         }
     }
 }
@@ -337,6 +366,16 @@
         display: flex;
         align-items: center;
         cursor: text;
+    }
+
+    .addRouteBtn {
+        width: fit-content;
+        padding: 0.2rem;
+        border: 1px solid black;
+        outline: none;
+        border-radius: 100px;
+        font-size: 1.1rem;
+        margin: 0 auto;
     }
 
     &__DateInfo {

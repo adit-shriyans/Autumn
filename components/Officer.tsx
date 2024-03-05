@@ -136,7 +136,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
   return (
     <div className="Officer">
       <div className='Officer__info'>
-        <div className='Officer__locationName'>
+        <div className='Officer__container'>
           <div className='Officer__key'>
             Location
           </div>
@@ -163,7 +163,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
             )}
           </div>
         </div>
-        <div className='Officer__dept'>
+        <div className='Officer__container'>
           <div className='Officer__key'>
             Department
           </div>
@@ -190,7 +190,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
             )}
           </div>
         </div>
-        <div className='Officer__no'>
+        <div className='Officer__container'>
           <div className='Officer__key'>
             Contact No.
           </div>
@@ -217,7 +217,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
             )}
           </div>
         </div>
-        <div className='Officer__email'>
+        <div className='Officer__container'>
           <div className='Officer__key'>
             Email
           </div>
@@ -248,7 +248,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
       <Button 
         variant='outlined' 
         onClick={handleGoToMapClick}
-        // disabled={!isFormFilled}
+        disabled={!isFormFilled}
       > 
         <OpenInNewIcon /> View Map
       </Button>

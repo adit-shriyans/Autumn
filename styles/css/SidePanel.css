@@ -29,6 +29,13 @@
   font-size: 1.5rem;
   text-align: center;
 }
+.SidePanel__heading-arrow {
+  opacity: 0;
+}
+.SidePanel__heading-arrow:hover {
+  opacity: 1;
+  cursor: pointer;
+}
 .SidePanel__Home {
   display: flex;
   color: #fff;
@@ -59,6 +66,9 @@
   -webkit-border-radius: 10px;
   border-radius: 10px;
   background: #797979;
+}
+.SidePanel:hover__heading-arrow {
+  opacity: 0.7;
 }
 
 .TripInfo {
@@ -124,6 +134,17 @@
   height: fit-content;
   text-align: center;
   margin-right: 0.3rem;
+}
+.TripInfo__categories {
+  padding: 0.2rem;
+}
+.TripInfo__categories .MuiBox-root {
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+.TripInfo__categories-form {
+  color: #fff;
+  margin-bottom: 0.25rem;
 }
 
 .addStop {
@@ -292,6 +313,15 @@
   display: flex;
   align-items: center;
   cursor: text;
+}
+.PlaceInfo .addRouteBtn {
+  width: fit-content;
+  padding: 0.2rem;
+  border: 1px solid black;
+  outline: none;
+  border-radius: 100px;
+  font-size: 1.1rem;
+  margin: 0 auto;
 }
 .PlaceInfo__DateInfo {
   display: flex;

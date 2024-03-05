@@ -275,18 +275,10 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
                 {totalDistance ? totalDistance.toFixed(2) : 0}km
               </div>
             </div>
-            <div className='TripInfo__days'>
-              <div className='TripInfo__days-img'>
-                <EventNoteIcon />
-              </div>
-              <div className='TripInfo__days-text'>
-                {noOfDays} Days
-              </div>
-            </div>
           </div>
           <div className='TripInfo__categories'>
             <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
+              <FormControl className='TripInfo__categories-form' fullWidth>
                 <InputLabel>Select Type</InputLabel>
                 <Select
                   value={selectedType}
@@ -300,7 +292,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
               </FormControl>
             </Box>
             <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
+              <FormControl className='TripInfo__categories-form' fullWidth>
                 <InputLabel>Select Status</InputLabel>
                 <Select
                   value={selectedStatus}
@@ -314,7 +306,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
               </FormControl>
             </Box>
             <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
+              <FormControl className='TripInfo__categories-form' fullWidth>
                 <InputLabel>Sort By Date</InputLabel>
                 <Select
                   value={sortOrder}
