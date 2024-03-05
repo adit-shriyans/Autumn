@@ -5,14 +5,22 @@ const TripSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
-    name: {
+    dept: {
         type: String,
-        required: [true, 'Trip Name is required'],
+        required: [true, "Dept. not set"]
     },
-    status: {
+    location: {
+        type: [Number],
+    },
+    locationName: {
         type: String,
-        required: [true, 'Status is required'],
     },
+    no: {
+        type: String,
+    },
+    email: {
+        type: String,
+    }
 })
 
 const Trip = models.Trip || model("Trip", TripSchema);

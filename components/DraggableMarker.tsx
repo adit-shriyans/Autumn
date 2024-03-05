@@ -59,7 +59,7 @@ export default function DraggableMarker({ stops, setStops, center, id, setZoomLo
 
   return (
     <Marker 
-      draggable={true} 
+      draggable={false} 
       eventHandlers={eventHandlers} 
       position={position} 
       ref={markerRef} 

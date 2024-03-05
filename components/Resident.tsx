@@ -145,8 +145,8 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
           Your Location
           <div className='Resident__location-name'>Umred, Nagpur Rural Taluka, Nagpur, Maharashtra, 441108, India</div>
         </div>
-        <div className='Resident__garbageInfo'>
-          <Button variant='outlined' className='Resident__garbageInfo-mark' onClick={() => (setAddDesc(prev => !prev))}>Mark Garbage</Button>
+        <div className='Resident__victimInfo'>
+          <Button variant='outlined' className='Resident__victimInfo-mark' onClick={() => (setAddDesc(prev => !prev))}>Mark emergency</Button>
           {addDesc && (
             <>
             <Box
@@ -157,7 +157,7 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
               noValidate
               autoComplete="off"
             >
-              <div className='Resident__garbageInfo-desc'>
+              <div className='Resident__victimInfo-desc'>
                 <TextField
                   id="outlined-textarea"
                   label="Description"
@@ -178,13 +178,13 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
                     setType(event.target.value);
                   }}
                 >
-                  {types.map((type) => (
-                    <MenuItem value={type}>{type}</MenuItem>
+                  {types.map((type, id) => (
+                    <MenuItem key={id} value={type}>{type}</MenuItem>
                   ))}
                 </Select>
               </div>
             </Box>
-            <Button variant='outlined' className='Resident__garbageInfo-send' onClick={handleSendClick}>
+            <Button variant='outlined' className='Resident__victimInfo-send' onClick={handleSendClick}>
               <SendIcon /> Send
             </Button>
             </>
@@ -194,10 +194,10 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
           <div className='Resident__requests-heading'>
             Your Requests
           </div>
-          <div className='Resident__requests-requests'>
-            {stops.map((stop) => (
-              <div className='Resident__requests-requests'>
-                <RequestInfo distances={distances} setTotalDistance={setDistance} stops={userStops} setStops={setStops} stop={stop} />
+          <div className='Resident__requests-reqs'>
+            {stops.map((stop, id) => (
+              <div className='Resident__requests-req'>
+                <RequestInfo key={id} distances={distances} setTotalDistance={setDistance} stops={userStops} setStops={setStops} stop={stop} />
               </div>
             ))}
           </div>

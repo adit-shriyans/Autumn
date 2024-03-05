@@ -3,18 +3,14 @@
 import React, { useState, ChangeEvent, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapLocationDot, faRoute } from '@fortawesome/free-solid-svg-icons'
-import HomeIcon from '@mui/icons-material/Home';
 import TodayIcon from '@mui/icons-material/Today';
-import EventIcon from '@mui/icons-material/Event';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import DescriptionIcon from '@mui/icons-material/Description';
 import UtilityDropDown from './UtilityDropDown';
 import { MarkerLocation } from '@assets/types/types';
 import { calculateDistance, getTodaysDate, isValidDate } from '@assets/CalcFunctions';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+// import '../styles/css/PlaceInfo.css';
 
 interface RIPropsType {
   distances: Number[];
@@ -26,7 +22,7 @@ interface RIPropsType {
 
 const arraySize = 6;
 
-const PlaceInfoContent = ({ distances, stop, stops, setStops, setTotalDistance }: RIPropsType) => {
+const RequestInfo = ({ distances, stop, stops, setStops, setTotalDistance }: RIPropsType) => {
   const locationNameArr = stop.locationName.split(',');
   let name = locationNameArr[0];
   if (locationNameArr.length > 1) {
@@ -457,7 +453,7 @@ const PlaceInfoContent = ({ distances, stop, stops, setStops, setTotalDistance }
 const PlaceInfo = ({ distances, stop, stops, setStops, setTotalDistance }: RIPropsType) => {
   return (
       <div>
-        <PlaceInfoContent distances={distances} stop={stop} stops={stops} setStops={setStops} setTotalDistance={setTotalDistance} />
+        <RequestInfo distances={distances} stop={stop} stops={stops} setStops={setStops} setTotalDistance={setTotalDistance} />
       </div>
     )
 };

@@ -16,6 +16,15 @@ export type MarkerLocation = {
     notes?: string,
 }
 
+export type RescuerInfo = {
+    id: string,
+    dept: string,
+    location: L.LatLngTuple,
+    locationName: string,
+    no: string,
+    email: string,
+}
+
 export type searchResultType = {
   x: number;
   y: number;

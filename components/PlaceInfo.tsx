@@ -20,6 +20,7 @@ import { MarkerLocation } from '@assets/types/types';
 import { calculateDistance, getTodaysDate, isValidDate } from '@assets/CalcFunctions';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSession } from 'next-auth/react';
 
 interface PIPropsType {
   distances: Number[];
@@ -67,12 +68,12 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   const [added, setAdded] = useState(false);
 
   const LNInputRef = useRef<HTMLInputElement | null>(null);
-  const LDInputRef = useRef<HTMLInputElement | null>(null);
-  const HDInputRef = useRef<HTMLInputElement | null>(null);
   const IDInputRef = useRef<HTMLInputElement | null>(null);
   const ODInputRef = useRef<HTMLInputElement | null>(null);
   const NotesInputRef = useRef<HTMLInputElement | null>(null);
   const StatusInputRef = useRef<HTMLInputElement | null>(null);
+
+  const {data: session} = useSession();
 
   const getLocationDist = () => {
     return distances[stops.indexOf(stop)] || 0;

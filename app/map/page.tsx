@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkerLocation, StopResponseType } from '@assets/types/types';
+import { MarkerLocation, RescuerInfo, StopResponseType } from '@assets/types/types';
 import SidePanel from '@components/SidePanel';
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ const page = () => {
   const [routes, setRoutes] = useState<MarkerLocation[]>([]);
   const [zoomLocation, setZoomLocation] = useState<L.LatLngTuple>([51.505, -0.09]);
   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
+  const [rescuersInfo, setRescuersInfo] = useState<RescuerInfo[]>([]);
 
   useEffect(() => {
     if (navigator.geolocation) {
