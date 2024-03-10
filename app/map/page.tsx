@@ -18,7 +18,7 @@ const page = () => {
   const [filteredStops, setFilteredStops] = useState<MarkerLocation[]>([]);
 
   useEffect(() => {
-    if (typeof window !== undefined && window && navigator.geolocation) {
+    if (typeof window !== undefined && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
