@@ -1,6 +1,6 @@
 import '@styles/css/index.css'
 import { MarkerLocation, StopResponseType, TripType } from '@assets/types/types';
-import { SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { SetStateAction, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
@@ -10,6 +10,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { z, ZodError } from 'zod';
+import '@styles/css/Officer.css';
 
 const geocodingResponseSchema = z.object({
   place_id: z.number(),
@@ -35,9 +36,10 @@ interface OfficerPropsType {
   routes: MarkerLocation[];
   setRoutes: React.Dispatch<SetStateAction<MarkerLocation[]>>;
   coord: L.LatLngTuple;
+  setCoord: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
 }
 
-const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType) => {
+const Officer = ({ stops, setStops, routes, setRoutes, coord, setCoord }: OfficerPropsType) => {
   const router = useRouter();
   const {data: session} = useSession();
 
@@ -68,7 +70,7 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
 
   useEffect(() => {
     const fetchName = async () => {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0]}&lon=${coord[1]}`);
       const data = await response.json();
 
       const parsedData = geocodingResponseSchema.parse(data);
@@ -77,7 +79,45 @@ const Officer = ({ stops, setStops, routes, setRoutes, coord }: OfficerPropsType
       setInputValues(prev => ({...prev, [locationName]: locationName}))
     }
     fetchName();
-  })
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (location) {
+        const { latitude, longitude } = location.coords;
+        setCoord([latitude, longitude]);
+      }, function () {
+        console.log('Could not get position');
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const focusInput = (ref: React.RefObject<HTMLInputElement>) => {
+      if (ref && ref.current) {
+        ref.current.focus();
+      }
+    };
+  
+    Object.entries(editModes).forEach(([key, value]) => {
+      if (value) {
+        switch (key) {
+          case 'locationName':
+            focusInput(LInputRef);
+            break;
+          case 'dept':
+            focusInput(DInputRef);
+            break;
+          case 'no':
+            focusInput(NInputRef);
+            break;
+          case 'email':
+            focusInput(EInputRef);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }, [editModes]);
 
   const handleClick = (key: keyof typeof editModes) => {
     setEditModes(prev => ({ ...prev, [key]: true }));

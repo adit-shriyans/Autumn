@@ -4,6 +4,7 @@
     align-items: center;
     justify-content: center;
     color: #000;
+    height: 100%;
 
     &__container {
         padding: 0.5rem;
@@ -11,10 +12,11 @@
     }
 
     &__data, &__input {
+        min-height: 1.5rem;
         border: 1.5px solid black;
         outline: none;
         padding: 0.3rem;
         background-color: #fff;
-        min-width: 5rem;
+        width: 15rem;
     }
 }

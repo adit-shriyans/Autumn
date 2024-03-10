@@ -15,6 +15,7 @@ const page = () => {
   const [zoomLocation, setZoomLocation] = useState<L.LatLngTuple>([51.505, -0.09]);
   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const [rescuersInfo, setRescuersInfo] = useState<RescuerInfo[]>([]);
+  const [filteredStops, setFilteredStops] = useState<MarkerLocation[]>([]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -48,7 +49,7 @@ const page = () => {
 
   return (
     <div className='TripPage'>
-      <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} />
+      <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} setFilteredStops={setFilteredStops} />
       <DynamicMapComponent stops={stops} setStops={setStops} setDistances={setDistances} zoomLocation={zoomLocation} setZoomLocation={setZoomLocation} coord={coord} routes={routes} />
     </div>
   )

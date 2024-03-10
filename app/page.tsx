@@ -90,7 +90,7 @@ const MyPage = () => {
   return (
     <div>
       {/* <Resident stops={stops} setStops={setStops} coord={coord} /> */}
-      {session?.user.role === 'admin' ? (<Officer stops={stops} setStops={setStops} coord={coord} routes={routes} setRoutes={setRoutes} />) : (<Resident stops={stops} setStops={setStops} coord={coord} />)}
+      {session?.user.role === 'admin' ? (<Officer stops={stops} setStops={setStops} coord={coord} setCoord={setCoord} routes={routes} setRoutes={setRoutes} />) : (<Resident stops={stops} setStops={setStops} coord={coord} setCoord={setCoord} />)}
     </div>
   );
 };

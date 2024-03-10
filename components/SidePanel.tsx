@@ -34,6 +34,7 @@ interface SPPropsType {
   routes: MarkerLocation[];
   setStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
   setRoutes: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
+  setFilteredStops: React.Dispatch<React.SetStateAction<MarkerLocation[]>>;
   setZoomLocation: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
   coord: L.LatLngTuple;
 }
@@ -59,7 +60,7 @@ const geocodingResponseSchema = z.array(
   })
 );
 
-const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes, setRoutes }: SPPropsType) => {
+const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes, setRoutes, setFilteredStops }: SPPropsType) => {
   const [scrolled, setScrolled] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult<RawResult>[]>([]);
   const [addingLocation, setAddingLocation] = useState(false);

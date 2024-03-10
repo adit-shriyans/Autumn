@@ -47,12 +47,13 @@ interface RPropsType {
     stops: MarkerLocation[];
     setStops: React.Dispatch<SetStateAction<MarkerLocation[]>>;
     coord: L.LatLngTuple;
+    setCoord: React.Dispatch<React.SetStateAction<L.LatLngTuple>>;
 }
 
 const types = ['Fire', 'Earthquake', 'Flood', 'Gas Leak', 'Pest Control', 'Security Breach', 'Wild Animal', 'Robbery/Tresspassing', 'Accident'];
 types.sort();
 
-const Resident = ({stops, setStops, coord}: RPropsType) => {
+const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
 //   const [stops, setStops] = useState<MarkerLocation[]>([]);
 //   const [coord, setCoord] = useState<L.LatLngTuple>([51.505, -0.09]);
   const { data: session } = useSession();
@@ -86,11 +87,20 @@ const Resident = ({stops, setStops, coord}: RPropsType) => {
       }))
     }
     fetchUserStops();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (location) {
+        const { latitude, longitude } = location.coords;
+        setCoord([latitude, longitude]);
+      }, function () {
+        console.log('Could not get position');
+      });
+    }
   }, []);
 
   useEffect(() => {
     const fetchName = async () => {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0]}&lon=${coord[1]}`);
       const data = await response.json();
 
       const parsedData = geocodingResponseSchema.parse(data);
