@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDB } from '@utils/database';
 import Resc from '@models/resc';
+import { NextRequest } from 'next/server';
 // import { StopResponseType } from '@assets/types/types';
 
 interface RescRequestType {
@@ -12,7 +13,7 @@ interface RescRequestType {
 }
 
 // GET
-export const GET = async (request: Request | NextApiRequest, { params }: { params: { id: string } }) => {
+export const GET = async (request: Request | NextRequest, { params }: { params: { id: string } }) => {
     try {
         await connectToDB();
 
@@ -57,7 +58,7 @@ export const PATCH = async (request: { json: () => PromiseLike<RescRequestType> 
 };
 
 // DELETE
-export const DELETE = async (request: NextApiRequest, { params }: { params: { id: string } }) => {
+export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await connectToDB();
         await Resc.findByIdAndDelete(params.id);

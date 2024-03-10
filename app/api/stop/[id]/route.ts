@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDB } from '@utils/database';
 import Stop from '@models/stop';
+import { NextRequest } from 'next/server';
 // import { StopResponseType } from '@assets/types/types';
 
 interface StopRequestType {
@@ -14,7 +15,7 @@ interface StopRequestType {
 }
 
 // GET
-export const GET = async (request: Request | NextApiRequest, { params }: { params: { id: string } }) => {
+export const GET = async (request: Request | NextRequest, { params }: { params: { id: string } }) => {
     try {
         await connectToDB();
 
@@ -61,7 +62,7 @@ export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> 
 };
 
 // DELETE
-export const DELETE = async (request: NextApiRequest, { params }: { params: { id: string } }) => {
+export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await connectToDB();
         await Stop.findByIdAndDelete(params.id);
