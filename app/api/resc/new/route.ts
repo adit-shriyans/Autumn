@@ -14,7 +14,7 @@ interface RescRequestType {
     dept: String;
 }
 
-export const POST = async (req: { json: () => PromiseLike<RescRequestType> | RescRequestType; }) => {
+export const POST = async (req: Request | NextRequest) => {
     try {
         await connectToDB();
 

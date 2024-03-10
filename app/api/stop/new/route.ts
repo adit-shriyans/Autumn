@@ -9,7 +9,7 @@ interface StopRequestType extends MarkerLocation {
     userId: String;
 }
 
-export const POST = async (req: { json: () => PromiseLike<StopRequestType> | StopRequestType; }) => {
+export const POST = async (req: Request | NextRequest) => {
     try {
         await connectToDB();
 
