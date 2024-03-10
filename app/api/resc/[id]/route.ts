@@ -31,7 +31,7 @@ export const GET = async (request: Request | NextRequest, { params }: { params: 
 }
 
 // PATCH
-export const PATCH = async (request: { json: () => PromiseLike<RescRequestType> | RescRequestType; }, { params }: { params: { id: string } }) => {
+export const PATCH = async (request: Request | NextRequest, { params }: { params: { id: string } }) => {
     const { location, locationName, no, email, dept} = await request.json();
 
     try {

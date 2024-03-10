@@ -33,7 +33,7 @@ export const GET = async (request: Request | NextRequest, { params }: { params: 
 }
 
 // PATCH
-export const PATCH = async (request: { json: () => PromiseLike<StopRequestType> | StopRequestType; }, { params }: { params: { id: string } }) => {
+export const PATCH = async (request: Request | NextRequest, { params }: { params: { id: string } }) => {
     const { location, locationName, startDate, desc, notes, type, status } = await request.json();
 
     try {
