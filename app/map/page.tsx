@@ -18,19 +18,6 @@ const page = () => {
   const [filteredStops, setFilteredStops] = useState<MarkerLocation[]>([]);
 
   useEffect(() => {
-    if (typeof window !== undefined && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCoord([latitude, longitude]);
-        },
-        (error) => {
-          console.error('Error getting current location:', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
     const fetchStops = async () => {
       const response = await fetch(`/api/stop`, {
         method: 'GET'
@@ -43,8 +30,23 @@ const page = () => {
         return { id: stop._id, location: stop.location, locationName: stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status }
       }))
     };
-
+    
+    if(typeof window !== undefined) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCoord([latitude, longitude]);
+        },
+        (error) => {
+          console.error('Error getting current location:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
     fetchStops();
+  }
   }, []);
 
   return (
