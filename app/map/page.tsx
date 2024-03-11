@@ -31,7 +31,7 @@ const page = () => {
       }))
     };
     
-    if(typeof window !== undefined) {
+    if(typeof window !== 'undefined') {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {

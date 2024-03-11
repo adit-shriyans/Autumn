@@ -94,7 +94,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
   };
 
   const sortStopsByDate = (stops: MarkerLocation[], sortOrder: string) => {
-    const filteredStops = stops.filter(stop => stop.startDate !== undefined);
+    const filteredStops = stops.filter(stop => stop.startDate !== 'undefined');
 
     const sortedStops = filteredStops.sort((a, b) => {
       if (a.startDate && b.startDate) {
@@ -125,7 +125,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
     let dist = 0;
     let sDate = stops[0]?.startDate || getTodaysDate();
     for (let i = 0; i < stops.length; i++) {
-      if (stops[i].startDate !== undefined && compareDates(stops[i].startDate!, tripDates[0]) === -1) setTripDates([stops[i].startDate!, tripDates[1]])
+      if (stops[i].startDate !== 'undefined' && compareDates(stops[i].startDate!, tripDates[0]) === -1) setTripDates([stops[i].startDate!, tripDates[1]])
       if (i === 0) dist += parseFloat(calculateDistance(stops[i].location, coord).toFixed(2))
       else dist += parseFloat(calculateDistance(stops[i].location, stops[i - 1].location).toFixed(2))
     }
