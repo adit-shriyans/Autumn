@@ -86,7 +86,7 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
         return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
       }))
     }
-    if(session?.user.id) fetchUserStops();
+    if(typeof session?.user.id !== 'undefined') fetchUserStops();
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (location) {

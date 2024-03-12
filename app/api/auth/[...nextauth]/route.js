@@ -36,7 +36,6 @@ const handler = NextAuth({
             image: profile.picture,
           });
         }
-      console.log(session, "\n", session.user);
 
         return true
       } catch (error) {
