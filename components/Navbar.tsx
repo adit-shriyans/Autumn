@@ -22,6 +22,10 @@ const Navbar = () => {
         setUpProviders();
     }, []);
 
+    useEffect(() => {
+      console.log(session, "\n", session?.user);
+    }, [session]);
+
     return (
         <nav className='Nav'>
             <div className='Nav__content'>

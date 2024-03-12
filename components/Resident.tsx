@@ -86,7 +86,7 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
         return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
       }))
     }
-    fetchUserStops();
+    if(session?.user.id) fetchUserStops();
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (location) {
@@ -112,7 +112,7 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
   }, [coord]);
 
   const handleSendClick = async () => {
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0] || 55}&lon=${coord[1] || 55}`);
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord[0]}&lon=${coord[1]}`);
     const data = await response.json();
     const parsedData = geocodingResponseSchema.parse(data);
     const locationName = parsedData.display_name || 'Unknown Location';
