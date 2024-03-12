@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react';
 import dynamic from "next/dynamic";
 const DynamicMapComponent = dynamic(() => import("@components/MapComponent"), { ssr: false });
+const DynamicSidePanelComponent = dynamic(() => import("@components/SidePanel"), { ssr: false });
 
 const page = () => {
   const { data: session } = useSession();
@@ -51,7 +52,7 @@ const page = () => {
 
   return (
     <div className='TripPage'>
-      <SidePanel distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} setFilteredStops={setFilteredStops} />
+      <DynamicSidePanelComponent distances={distances} stops={stops} setStops={setStops} setZoomLocation={setZoomLocation} coord={coord} routes={routes} setRoutes={setRoutes} setFilteredStops={setFilteredStops} />
       <DynamicMapComponent stops={stops} setStops={setStops} setDistances={setDistances} zoomLocation={zoomLocation} setZoomLocation={setZoomLocation} coord={coord} routes={routes} />
     </div>
   )
