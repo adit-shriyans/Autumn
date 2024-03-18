@@ -18,7 +18,6 @@ const handler = NextAuth({
       session.user.id = sessionUser._id.toString();
       if(session.user.email === 'shriyansadit@gmail.com') session.user.role = 'admin';
       else session.user.role = 'resident'
-      console.log(session, "\n", session.user);
       return session;
     },
     async signIn({ account, profile, user, credentials }) {
