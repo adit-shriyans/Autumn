@@ -59,7 +59,7 @@ const Navbar = () => {
                                     <button
                                         type='button'
                                         key={provider.name}
-                                        onClick={() => signIn(provider.id)}
+                                        onClick={() => signIn(provider.id, { callbackUrl: "/" })}
                                         className='Nav__signIn-btn'
                                     >
                                         Sign In

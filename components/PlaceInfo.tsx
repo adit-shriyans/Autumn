@@ -425,7 +425,7 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
       </div>
       {addRoute && (
         <button onClick={handleAddRoute} className='addRouteBtn'>
-          Add Route
+          {added?'Remove':'Add'} Route
         </button>
       )}
     </div>

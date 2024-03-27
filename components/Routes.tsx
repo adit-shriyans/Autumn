@@ -15,12 +15,11 @@ interface RPropsType {
 
 const Routes = ({ stops, setDistances, coord }: RPropsType) => {
     const [routeControls, setRouteControls] = useState<L.Routing.Control[]>([]);
-    const [firstRender, setFirstRender] = useState(true);
 
     const map = useMap();
 
     useEffect(() => {
-        if (!firstRender && map) {
+        if (map) {
             for (let i = 0; i < routeControls.length; i++) {
                 if (routeControls[i].getWaypoints()) routeControls[i].spliceWaypoints(0, 2);
             };
@@ -96,8 +95,7 @@ const Routes = ({ stops, setDistances, coord }: RPropsType) => {
             }
             document.querySelector('.MapContainer__routes')?.classList.add('hidden');
         }
-        setFirstRender(false);
-    }, [stops, map, firstRender, coord]);
+    }, [stops, map, coord]);
 
     useEffect(() => {
         const getTotalDistance = (route: { coordinates: any[]; }) => {
