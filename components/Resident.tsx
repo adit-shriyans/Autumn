@@ -15,6 +15,7 @@ import { z, ZodError } from 'zod';
 import '../styles/css/Resident.css';
 import PlaceInfo from './PlaceInfo';
 import RequestInfo from './RequestInfo';
+import io from 'socket.io-client';
 
 declare module 'next-auth' {
   interface Session {
