@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,10 +14,9 @@ const Navbar = () => {
 
     useEffect(() => {
         const setUpProviders = async () => {
-            const response = await getProviders();
-
-            setProviders(response);
-        };
+              const response = await getProviders();
+              setProviders(response);
+          };
 
         setUpProviders();
     }, []);
@@ -59,7 +58,7 @@ const Navbar = () => {
                                     <button
                                         type='button'
                                         key={provider.name}
-                                        onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+                                        onClick={() => signIn(provider.id)}
                                         className='Nav__signIn-btn'
                                     >
                                         Sign In
