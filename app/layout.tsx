@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import Provider from '@components/Provider'
 import { Session } from 'next-auth';
 import '@styles/css/index.css';
+import { ReduxProvider } from '@redux/provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    <ReduxProvider>
     <html lang="en">
       <body className='Root' style={{ margin: 0 }}>
         <Provider session={undefined}>
@@ -22,5 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Provider>
       </body>
     </html>
+    </ReduxProvider>
   )
 }

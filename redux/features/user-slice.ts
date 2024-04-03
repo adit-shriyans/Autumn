@@ -1,9 +1,14 @@
+import { MarkerLocation } from '@assets/types/types';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 type InitialState = {
-    arr: string[];
+    arr: MarkerLocation[];
     bool: boolean,
 }
+
+// type InitialState = {
+//     value: UserState;
+// }
 
 const initialState = {
         arr: [],
@@ -14,7 +19,7 @@ export const user = createSlice({
     name: 'user', 
     initialState,
     reducers: {
-        setArr: (state, action: PayloadAction<string[]>) => {
+        setArr: (state, action: PayloadAction<MarkerLocation[]>) => {
             state.arr = action.payload;
         },
         setBool: (state, action: PayloadAction<boolean>) => {

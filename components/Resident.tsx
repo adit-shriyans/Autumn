@@ -13,9 +13,11 @@ import SendIcon from '@mui/icons-material/Send';
 import { MarkerLocation, StopResponseType } from '@assets/types/types';
 import { z, ZodError } from 'zod';
 import '../styles/css/Resident.css';
-import PlaceInfo from './PlaceInfo';
 import RequestInfo from './RequestInfo';
-import io from 'socket.io-client';
+import { setArr, setBool } from "@redux/features/user-slice";
+import { useDispatch } from 'react-redux';
+import { AppDispatch, useAppSelector } from '@redux/store';
+import { io } from 'socket.io-client';
 
 declare module 'next-auth' {
   interface Session {
@@ -66,9 +68,18 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
   const [distances, setDistances] = useState<Number[]>([]);
   const [distance, setDistance] = useState<number>(0);
   const [userStops, setUserStops] = useState<MarkerLocation[]>([]);
+  const [socket, setSocket] = useState<any>(undefined);
+
+  const redSt = useAppSelector((state) => state.userReducer.arr);
 
   useEffect(() => {
-    // Fetch current date and format it as dd-mm-yyyy
+    console.log(redSt);
+  }, []);
+
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
     const currentDate = new Date();
     const day = String(currentDate.getDate()).padStart(2, '0');
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
@@ -76,18 +87,24 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
     const formattedDate = `${day}-${month}-${year}`;
     setStartDate(formattedDate);
 
-    const fetchUserStops = async () => {
-      const response = await fetch(`/api/stop/${session?.user.id}`, {
-        method: 'GET'
-      });
-      const data = await response.json();
-      console.log(data);
+    //socket
+    const socket = io("http://localhost:3001");
+    setSocket(socket);
 
-      setUserStops(data.map((stop: StopResponseType) => {
-        return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
-      }))
-    }
-    if(typeof session?.user.id !== 'undefined') fetchUserStops();
+    // const fetchUserStops = async () => {
+    //   const response = await fetch(`/api/stop/${session?.user.id}`, {
+    //     method: 'GET'
+    //   });
+    //   const data = await response.json();
+
+    //   const newUserStops = data.map((stop: StopResponseType) => {
+    //     return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
+    //   });
+    //   console.log("fetch", newUserStops, data);
+
+    //   setUserStops(newUserStops)
+    // }
+    // if(session?.user.id) fetchUserStops();
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (location) {
@@ -98,6 +115,23 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    const fetchUserStops = async () => {
+      const response = await fetch(`/api/stop/${session?.user.id}`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+
+      const newUserStops = data.map((stop: StopResponseType) => {
+        return {id: stop._id, location: stop.location, locationName:stop.locationName, startDate: stop.startDate, desc: stop.desc, notes: stop.notes, type: stop.type, status: stop.status };
+      });
+      console.log("fetch", newUserStops, data);
+
+      setUserStops(newUserStops)
+    }
+    if(session?.user.id) fetchUserStops();
+  }, [session]);
 
   useEffect(() => {
     const fetchName = async () => {
@@ -118,8 +152,6 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
     const parsedData = geocodingResponseSchema.parse(data);
     const locationName = parsedData.display_name || 'Unknown Location';
     setLocationName(locationName);
-
-    console.log(session?.user.id, desc, type);
 
     const createStopResponse = await fetch("/api/stop/new", {
           method: "POST",
@@ -146,6 +178,11 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
       const createdStop = await createStopResponse.json();
 
     setStops([...stops, { id: createdStop._id, startDate, location: coord, locationName, notes: createdStop.notes, desc, type, status: 'Upcoming'}]);
+    dispatch(setArr([...redSt, { id: createdStop._id, startDate, location: coord, locationName, notes: createdStop.notes, desc, type, status: 'Upcoming'}]));
+    
+    //socket
+    socket.emit("new victim stop", [...stops, { id: createdStop._id, startDate, location: coord, locationName, notes: createdStop.notes, desc, type, status: 'Upcoming'}]);
+
     setAddDesc(false);
   }
 
@@ -153,7 +190,7 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
     <div className="Resident">
       <div className='Resident__container'>
         <div className='Resident__location'>
-          Your Location
+          Your Location 
           <div className='Resident__location-name'>{locationName}</div>
         </div>
         <div className='Resident__victimInfo'>
@@ -206,8 +243,8 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
             Your Requests
           </div>
           <div className='Resident__requests-reqs'>
-            {stops.map((stop, id) => (
-              <div className='Resident__requests-req'>
+            {userStops.map((stop, id) => (
+              <div key={id} className='Resident__requests-req'>
                 <RequestInfo key={id} distances={distances} setTotalDistance={setDistance} stops={userStops} setStops={setStops} stop={stop} />
               </div>
             ))}

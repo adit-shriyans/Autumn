@@ -30,21 +30,21 @@
 
     &__plan {
         color: #AD8B73;
-        font-size: 1.25rem;
+        font-size: 1.25vw;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 5px;
         width: fit-content;
-        padding: 0.5rem 1rem;
+        padding: 0.5vw 1vw;
         margin: 0 auto;
-        margin-top: 1.5rem;
+        margin-top: 1.5vw;
         background-color: transparent;
         border: 2px solid #e1bf8b;
         cursor: pointer;
 
         svg {
-            margin-right: 0.5rem;
+            margin-right: 0.5vw;
         }
     }
 
@@ -52,11 +52,11 @@
         display: flex;
         margin: 0 auto;
         flex-wrap: wrap;
-        width: 78rem;
+        width: 78vw;
     }
 
     fieldset {
-        margin-top: 2.5rem;
+        margin-top: 2.5vw;
         border: 2px solid transparent;
         border-top-color: #4d2c2c;
         color: #9c7b66;

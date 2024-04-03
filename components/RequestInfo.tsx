@@ -10,6 +10,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import UtilityDropDown from './UtilityDropDown';
 import { MarkerLocation } from '@assets/types/types';
 import { calculateDistance, getTodaysDate, isValidDate } from '@assets/CalcFunctions';
+import DescriptionIcon from '@mui/icons-material/Description';
 // import '../styles/css/PlaceInfo.css';
 
 interface RIPropsType {
@@ -357,72 +358,14 @@ const RequestInfo = ({ distances, stop, stops, setStops, setTotalDistance }: RIP
             <div
               className='PlaceInfo__indate PlaceInfo__date PlaceInfo__content'
             >
-                {stop.startDate}
+              {stop.startDate}
             </div>
           </div>
-          {/* <div className='PlaceInfo__info'>
-            <div className='PlaceInfo__img-container'>
-              <EventIcon className='PlaceInfo__img' />
-            </div>
-            <div className={`ErrorPopUp ${showErr[4] && errMsg ? '' : 'hidden'}`}>
-              {errMsg}
-            </div> */}
-            {/* <div
-              className='PlaceInfo__outdate PlaceInfo__date PlaceInfo__content'
-              onClick={() => handleClick(4)}
-            >
-              {editMode[4] ? (
-                <form className='PlaceInfo__form'>
-                  <input
-                    className='PlaceInfo__input PlaceInfo__input-date'
-                    type='text'
-                    value={inputValues.outDate}
-                    placeholder='Check-Out Date'
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
-                    onKeyDown={handleInputKeyDown}
-                    ref={ODInputRef}
-                    name="outDate"
-                  />
-                </form>
-              ) : (
-                `${inputValues.outDate}`
-              )}
-            </div> */}
-          {/* </div> */}
         </div>
-        {/* <div className='PlaceInfo__DistInfo'>
-          <div className='PlaceInfo__info'>
-            <div className='PlaceInfo__img-container'>
-              <FontAwesomeIcon className='PlaceInfo__img' icon={faRoute} />
-            </div>
-            <div
-              className='PlaceInfo__prevdist PlaceInfo__dist PlaceInfo__content'
-            >
-              {distValues.locationDist}km
-            </div>
-          </div>
-          <div className='PlaceInfo__info'>
-            <div className='PlaceInfo__img-container'>
-              <HomeIcon className='PlaceInfo__img PlaceInfo__img-distance' />
-            </div>
-            <div
-              className='PlaceInfo__prevdist PlaceInfo__dist PlaceInfo__content'
-            >
-              {distValues.homeDist}km
-            </div>
-          </div>
-        </div> */}
         <div className={`PlaceInfo__info ${showNotes || inputValues.notesMsg !== '' ? '' : 'hidden'}`}>
           <div className='PlaceInfo__img-container'>
             <EditNoteIcon />
           </div>
-          {/* <div
-            className='PlaceInfo__notes PlaceInfo__content'
-            onClick={() => handleClick(5)}
-          >
-            {inputValues.desc}
-          </div> */}
           <div
             className='PlaceInfo__notes PlaceInfo__content'
             onClick={() => handleClick(5)}
@@ -445,6 +388,12 @@ const RequestInfo = ({ distances, stop, stops, setStops, setTotalDistance }: RIP
               `${stop.desc}`
             )}
             </div>
+            {stop.notes && (<div
+              className='PlaceInfo__notes PlaceInfo__content'
+            >
+              <DescriptionIcon />
+              {stop.notes}
+            </div>)}
         </div>
     </div>
   )

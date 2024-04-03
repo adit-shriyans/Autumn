@@ -7,11 +7,31 @@
         width: 100%;
 
         &__routes {
-            top: 4rem;
+            top: 4vw;
             overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 5vw);
+            overflow-y: auto;
 
             &.hidden {
                 display: none;
+            }
+
+            &::-webkit-scrollbar {
+                width: 7px;
+            }
+        
+            &::-webkit-scrollbar-track {
+                -webkit-border-radius: 10px;
+                background: #7d7d7d3e;
+                border-radius: 10px;
+            }
+        
+            &::-webkit-scrollbar-thumb {
+                -webkit-border-radius: 10px;
+                border-radius: 10px;
+                background: #797979;
             }
         }
 
@@ -21,11 +41,11 @@
         }
 
         &__userBtns {
-            top: 1rem;
+            top: 1vw;
             display: flex;
             position: absolute;
             z-index: 2000;
-            right: 1rem;
+            right: 1vw;
             flex-direction: row;
             align-items: center;
         }
@@ -35,20 +55,20 @@
             background-color: #fff;
             color: #ff5a01;
             border-radius: 50%;
-            padding: 0.5rem;
+            padding: 0.5vw;
             border: 1.7px solid #1a1a1a;
             cursor: pointer;
-            margin-left: 1rem;
+            margin-left: 1vw;
         }
 
         &__save {
             z-index: 2000;
             background-color: #fff;
-            padding: 0.3rem 0.5rem;
+            padding: 0.3vw 0.5vw;
             border: 1.7px solid #1a1a1a;
             border-radius: 5px;
             font-family: sans-serif;
-            font-size: 1rem;
+            font-size: 1vw;
             cursor: pointer;
         }
     }

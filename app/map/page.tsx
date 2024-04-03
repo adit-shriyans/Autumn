@@ -24,7 +24,6 @@ const page = () => {
         method: 'GET'
       });
       const data = await response.json();
-      console.log("Get", data);
       // data.sort((a: { startDate: number; }, b: { id: number; }) => a.id-b.id);
 
       setStops(data.map((stop: StopResponseType) => {
@@ -33,21 +32,21 @@ const page = () => {
     };
     
     if(typeof window !== 'undefined') {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCoord([latitude, longitude]);
-        },
-        (error) => {
-          console.error('Error getting current location:', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setCoord([latitude, longitude]);
+          },
+          (error) => {
+            console.error('Error getting current location:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+      fetchStops();
     }
-    fetchStops();
-  }
   }, []);
 
   return (

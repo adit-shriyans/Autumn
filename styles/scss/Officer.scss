@@ -7,16 +7,16 @@
     height: 100%;
 
     &__container {
-        padding: 0.5rem;
-        margin: 1rem;
+        padding: 0.5vw;
+        margin: 1vw;
     }
 
     &__data, &__input {
-        min-height: 1.5rem;
+        min-height: 1.5vw;
         border: 1.5px solid black;
         outline: none;
-        padding: 0.3rem;
+        padding: 0.3vw;
         background-color: #fff;
-        width: 15rem;
+        width: 15vw;
     }
 }

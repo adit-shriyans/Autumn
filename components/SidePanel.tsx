@@ -5,8 +5,6 @@ import '../styles/css/SidePanel.css';
 import PlaceInfo from './PlaceInfo';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import TocIcon from '@mui/icons-material/Toc';
 import totalDistImg from '../assets/totalDistance.png';
 import Image from 'next/image';
 import { MarkerLocation, RescuerInfo, searchResultType } from '@assets/types/types';
@@ -17,16 +15,17 @@ import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import '../node_modules/leaflet-geosearch/dist/geosearch.css';
 import { SearchResult } from 'leaflet-geosearch/dist/providers/provider.js';
 import { RawResult } from 'leaflet-geosearch/dist/providers/openStreetMapProvider.js';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useSession } from 'next-auth/react';
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import RescInfo from './RescInfo';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, useAppSelector } from '@redux/store';
+import { io } from 'socket.io-client';
 
 interface SPPropsType {
   distances: Number[];
@@ -77,11 +76,19 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
   const addStopRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
-  const params = useParams();
+  const socket = io("http://localhost:3001");
+
+  socket.on("new victim location", (newStops) => {
+    console.log(newStops);
+    setStops([...stops, ...newStops]);
+  })
 
   const [selectedType, setSelectedType] = useState<string>('All');
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [sortOrder, setSortOrder] = useState<string>('asc');
+
+  const redSt = useAppSelector((state) => state.userReducer.arr);
+  const dispatch = useDispatch<AppDispatch>();
 
   const groupByType = (stops: MarkerLocation[], type: string) => {
     if (type === 'All') return stops;
@@ -108,18 +115,12 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
     return sortedStops;
   };
 
-
-  // Filtered and sorted stops
   const filteredStops = useMemo(() => {
     let filtered = groupByType(stops, selectedType);
     filtered = groupByStatus(filtered, selectedStatus);
     filtered = sortStopsByDate(filtered, sortOrder);
     return filtered;
   }, [stops, selectedType, selectedStatus, sortOrder]);
-
-  useEffect(() => {
-    console.log(filteredStops);
-  }, [filteredStops]);
 
   useEffect(() => {
     let dist = 0;
@@ -155,6 +156,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
     };
     const element = document.querySelector('.SidePanel');
     element?.addEventListener('scroll', handleScroll);
+    
     return () => {
       element?.removeEventListener('scroll', handleScroll);
     };
@@ -264,6 +266,11 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
 
   return (
     <div className={`SidePanel ${scrolled ? 'SideWindow' : ''}`}>
+      {redSt.map((stop, id) => (
+        <div style={{color: 'black'}}>
+          {stop.desc} {stop.id} {stop.type}
+        </div>
+      ))}
       {showVictims ? (
         <>
           <h1 className='SidePanel__heading'>Victim Locations <ArrowCircleRightIcon className='SidePanel__heading-arrow' /></h1>

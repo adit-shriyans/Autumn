@@ -107,7 +107,6 @@ const PlaceInfoContent = ({ distances, stop, stops, dndEnable, setStops, setTota
   }
 
   const saveStops = async () => {
-    console.log(stop);
     const {location, locationName, startDate, desc, type} = stop
     const res = await fetch(`/api/stop/${stop.id}`, {
         method: "PATCH",
