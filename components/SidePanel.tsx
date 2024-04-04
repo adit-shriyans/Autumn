@@ -76,7 +76,7 @@ const SidePanel = ({ distances, stops, setStops, setZoomLocation, coord, routes,
   const addStopRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
-  const socket = io("http://localhost:3001");
+  const socket = io('https://dmsbackend-ek55.onrender.com');
 
   socket.on("new victim location", (newStops) => {
     console.log(newStops);

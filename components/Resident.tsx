@@ -88,7 +88,7 @@ const Resident = ({stops, setStops, coord, setCoord}: RPropsType) => {
     setStartDate(formattedDate);
 
     //socket
-    const socket = io("http://localhost:3001");
+    const socket = io("https://dmsbackend-ek55.onrender.com");
     setSocket(socket);
 
     // const fetchUserStops = async () => {
